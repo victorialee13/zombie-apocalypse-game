@@ -1,0 +1,158 @@
+@import url("https://fonts.googleapis.com/css2?family=Bellefair&family=Freckle+Face&family=Share+Tech+Mono&family=Varela+Round&display=swap");
+
+.settings-page {
+  --bg: #0e0f0c;
+  --panel: #181a15;
+  --panel-2: #22251e;
+  --border: #34382d;
+  --text: #e9e4d4;
+  --muted: #8e8a7c;
+  --red: #b3261e;
+  --amber: #d9a441;
+
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 44px 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 36px;
+  background: radial-gradient(circle at center, #3a1512 0%, #120f0c 60%, #0a0a08 100%);
+  color: var(--text);
+  font-family: "Bellefair", serif;
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-header h1 {
+  margin: 0;
+  font-family: "Freckle Face", cursive;
+  font-size: 88px;
+  font-weight: normal;
+}
+
+.spacer {
+  width: 100px;
+}
+
+/* Panels */
+.settings-sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.panel h2 {
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  font-family: "Varela Round", sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* Controls */
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 19px;
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.value {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.hint {
+  margin: -8px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--red);
+}
+
+.segmented {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.segmented button {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.segmented button.selected {
+  background: var(--red);
+  color: var(--text);
+}
+
+/* Buttons */
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 4px;
+  font-family: "Bellefair", serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-primary {
+  min-width: 200px;
+  background: var(--red);
+  border: none;
+}
+
+.btn-secondary {
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+.btn:hover {
+  filter: brightness(1.15);
+}
