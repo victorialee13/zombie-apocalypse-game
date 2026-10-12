@@ -32,7 +32,7 @@ export const STARTING_SURVIVORS: Survivor[] = [
   { id: "sam", name: "Sam Reyes", role: "Mechanic", health: 40, status: "Injured" },
   { id: "iris", name: "Iris Novak", role: "Teacher", health: 80, status: "Healthy" },
   { id: "theo", name: "Theo Grant", role: "Farmer", health: 60, status: "Exhausted" },
-  { id: "june", name: "June Hale", role: "Kid · 12", health: 85, status: "Scared" },
+  { id: "ethan", name: "Ethan Chao", role: "Kid · 12", health: 85, status: "Scared" },
   { id: "marcus", name: "Marcus Webb", role: "Ex-Soldier", health: 90, status: "Healthy" },
 ];
 
