@@ -4,25 +4,15 @@ const CREDITS = ["Soliday Ek", "Victoria Lee", "Andrei Piliguzov", "Ethan Chao"]
 
 export default function LandingPage() {
   return (
-<<<<<<< HEAD
-    <main style={{ padding: 48, fontFamily: "serif" }}>
-      <h1>Landing page goes here</h1>
-      <Link href="/dashboard" style={{ color: "#d9a441", marginRight: 24 }}>
-        Start
-      </Link>
-      <Link href="/settings" style={{ color: "#d9a441" }}>
-        Settings
-      </Link>
-=======
     <main className="flex min-h-screen flex-col items-center justify-center bg-vignette px-6 py-12">
       <h1 className="mb-[22px] text-center font-display text-[length:min(172px,17vw)] leading-[0.88] uppercase">
         <span className="block">Zombie</span>
         <span className="block">Apocalypse</span>
       </h1>
 
-      {/* Start, Continue, and How to Play don't have screens yet */}
+      {/* Continue and How to Play don't have screens yet */}
       <nav className="grid w-[340px] max-w-full grid-cols-2 gap-x-3 gap-y-[13px]">
-        <Button variant="primary" className="col-span-2">
+        <Button href="/dashboard" variant="primary" className="col-span-2">
           Start
         </Button>
         <Button className="col-span-2">Continue</Button>
@@ -43,7 +33,6 @@ export default function LandingPage() {
       <p className="mt-7 text-center font-display text-[15px] tracking-[0.2em] text-muted [font-variant-caps:small-caps]">
         {CREDITS.join(" - ")}
       </p>
->>>>>>> 1b86702 (feat: landing, settings, tailwind)
     </main>
   );
 }
