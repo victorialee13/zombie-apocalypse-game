@@ -10,6 +10,9 @@
   --color-muted: #8e8a7c;
   --color-blood: #b3261e;
   --color-amber: #d9a441;
+  --color-green: #7fa650;
+  --color-blue: #5b8ba8;
+  --color-purple: #9a7fb8;
 
   --animate-live-pulse: live-pulse 1.6s ease-in-out infinite;
 
@@ -26,6 +29,19 @@
   --font-body: var(--font-bellefair), serif;
   --font-label: var(--font-varela-round), sans-serif;
   --font-mono: var(--font-share-tech-mono), monospace;
+}
+
+/* Dashboard breakpoints: compact = short or not-very-wide screens, narrow = taller than wide */
+@custom-variant compact {
+  @media (max-aspect-ratio: 1499/1000), (max-height: 500px) {
+    @slot;
+  }
+}
+
+@custom-variant narrow {
+  @media (max-aspect-ratio: 1/1) {
+    @slot;
+  }
 }
 
 /* Red glow behind each screen */

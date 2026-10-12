@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import "./DashboardPage.css";
+import Button from "../../components/Button";
 import type { ColorStatus } from "../../game/colors";
 import { TOTAL_DAYS } from "../../game/rules";
 import {
@@ -13,6 +13,51 @@ import {
   type Supplies,
 } from "../../game/supplies";
 import { LOW_HEALTH, STATUS_COLOR, isAlive, type Survivor } from "../../game/survivors";
+
+// Tailwind only generates classes it can find written out in full, so each tone maps to complete class names
+const TEXT_TONE: Record<ColorStatus, string> = {
+  green: "text-green",
+  amber: "text-amber",
+  red: "text-blood",
+  blue: "text-blue",
+  purple: "text-purple",
+};
+
+const FILL_TONE: Record<ColorStatus, string> = {
+  green: "bg-green",
+  amber: "bg-amber",
+  red: "bg-blood",
+  blue: "bg-blue",
+  purple: "bg-purple",
+};
+
+const BORDER_TONE: Record<ColorStatus, string> = {
+  green: "border-green",
+  amber: "border-amber",
+  red: "border-blood",
+  blue: "border-blue",
+  purple: "border-purple",
+};
+
+const CARD_TONE: Record<ColorStatus, string> = {
+  green: "border-line",
+  amber: "border-amber/70",
+  red: "border-blood/70",
+  blue: "border-line",
+  purple: "border-line",
+};
+
+const CHIP_TONE: Record<ColorStatus, string> = {
+  green: "border-green/60 bg-green/16 text-green",
+  amber: "border-amber/60 bg-amber/16 text-amber",
+  red: "border-blood/60 bg-blood/16 text-blood",
+  blue: "border-blue/60 bg-blue/16 text-blue",
+  purple: "border-purple/60 bg-purple/16 text-purple",
+};
+
+const ROW = "flex items-center justify-between gap-8";
+const HEADING =
+  "font-display text-[length:calc(34*var(--u))] tracking-[0.02em] compact:text-[length:calc(20*var(--u))]";
 
 function initials(name: string) {
   return name
@@ -54,8 +99,15 @@ function describeSupply(id: SupplyId, amount: number, aliveCount: number) {
 
 function Bar({ value, tone, thin }: { value: number; tone: ColorStatus; thin?: boolean }) {
   return (
-    <div className={`bar ${thin ? "bar-thin" : ""}`}>
-      <div className={`bar-fill tone-${tone}`} style={{ width: `${value}%` }} />
+    <div
+      className={`w-full overflow-hidden rounded-full bg-line ${
+        thin ? "h-6 compact:h-4" : "h-8 compact:h-5"
+      }`}
+    >
+      <div
+        className={`h-full rounded-[inherit] transition-[width] duration-300 ease-[ease] ${FILL_TONE[tone]}`}
+        style={{ width: `${value}%` }}
+      />
     </div>
   );
 }
@@ -96,17 +148,24 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
   const alive = survivors.filter(isAlive);
   const needAttention = alive.filter((s) => s.status !== "Healthy").length;
 
+  /*
+   * The whole screen scales with the window: --u is one design pixel (the design is 1440x800,
+   * 800x480 when compact, 390x750 when narrow). Pointing --spacing at it makes every spacing
+   * class on this page count in design pixels, so p-20 is 20 design pixels.
+   */
   return (
-    <div className="dashboard-page">
-      <header className="dashboard-header">
-        <div className="day">
+    <div className="flex h-dvh touch-pan-x touch-pan-y flex-col overflow-hidden bg-vignette [--spacing:var(--u)] [--u:min(calc(100vw/1440),calc(100dvh/800))] compact:[--u:min(calc(100vw/800),calc(100dvh/480))] narrow:[--u:min(calc(100vw/390),calc(100dvh/750))]">
+      <header className="flex shrink-0 items-center justify-between gap-16 border border-line bg-panel px-36 py-20 compact:px-12 compact:py-10">
+        <div className="flex gap-[0.35em] font-display text-[length:calc(52*var(--u))] compact:text-[length:calc(26*var(--u))]">
           <span>DAY {String(day).padStart(2, "0")}</span>
-          <span className="day-total">/ {TOTAL_DAYS}</span>
+          <span className="text-muted">/ {TOTAL_DAYS}</span>
         </div>
 
-        <div className="meter">
-          <div className="meter-row">
-            <span className="meter-label">SURVIVORS ALIVE</span>
+        <div className="flex w-200 flex-col gap-6 compact:w-150 compact:gap-4">
+          <div
+            className={`${ROW} font-label text-[length:calc(13.5*var(--u))] compact:text-[length:calc(10*var(--u))]`}
+          >
+            <span className="tracking-[0.1em] whitespace-nowrap text-muted">SURVIVORS ALIVE</span>
             <span className="text-green">
               {alive.length}/{survivors.length}
             </span>
@@ -115,22 +174,34 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
         </div>
       </header>
 
-      <main className="dashboard-body">
-        <section className="supplies">
-          <h2>Supplies</h2>
-          <div className="supply-list">
+      <main className="flex min-h-0 flex-1 items-start gap-24 px-36 pt-24 compact:flex-col compact:items-stretch compact:gap-10 compact:px-12 compact:pt-10">
+        <section className="flex w-360 shrink-0 flex-col gap-11 rounded border border-line bg-panel px-23 py-20 compact:w-auto compact:gap-8 compact:px-12 compact:py-10">
+          <h2 className={HEADING}>Supplies</h2>
+          <div className="flex flex-col gap-11 compact:grid compact:grid-cols-4 compact:gap-8 narrow:grid-cols-2">
             {SUPPLY_IDS.map((id) => {
               const supply = describeSupply(id, supplies[id], alive.length);
               return (
-                <div key={id} className="supply">
-                  <div className="supply-row">
-                    <span className="supply-name">{supply.name}</span>
-                    <span className={`supply-amount text-${supply.color}`}>{supply.amountText}</span>
+                <div
+                  key={id}
+                  className="flex min-w-0 flex-col gap-8 rounded border border-line bg-panel-2 px-17 py-14 compact:gap-5 compact:px-10 compact:py-8"
+                >
+                  {/* When compact, several supplies share a row, so the name stacks above its amount */}
+                  <div className={`${ROW} compact:flex-col compact:items-start compact:gap-1`}>
+                    <span className="text-[length:calc(23*var(--u))] tracking-[0.04em] whitespace-nowrap compact:text-[length:calc(15*var(--u))]">
+                      {supply.name}
+                    </span>
+                    <span
+                      className={`font-label text-[length:calc(16*var(--u))] whitespace-nowrap compact:text-[length:calc(12*var(--u))] ${TEXT_TONE[supply.color]}`}
+                    >
+                      {supply.amountText}
+                    </span>
                   </div>
                   <Bar value={supply.fill} tone={supply.color} />
-                  <div className="supply-row supply-meta">
-                    <span className={supply.low ? "text-red" : ""}>{supply.note}</span>
-                    <span className="supply-usage">{supply.usageText}</span>
+                  <div className="flex items-start justify-between gap-8 text-[length:calc(16*var(--u))] text-muted compact:text-[length:calc(11*var(--u))]">
+                    <span className={supply.low ? "text-blood" : ""}>{supply.note}</span>
+                    <span className="font-label text-[length:calc(13.5*var(--u))] compact:text-[length:calc(10*var(--u))]">
+                      {supply.usageText}
+                    </span>
                   </div>
                 </div>
               );
@@ -138,15 +209,18 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
           </div>
         </section>
 
-        <section className="survivors">
-          <div className="survivors-header">
-            <h2>Survivors</h2>
+        <section className="flex min-w-0 flex-1 flex-col gap-16 compact:gap-8">
+          <div className="flex items-center justify-between gap-12">
+            <h2 className={HEADING}>Survivors</h2>
             {needAttention > 0 && (
-              <span className="attention">{needAttention} need attention</span>
+              <span className="font-label text-[length:calc(14*var(--u))] text-blood compact:text-[length:calc(11*var(--u))]">
+                {needAttention} need attention
+              </span>
             )}
           </div>
 
-          <div className="survivor-grid">
+          {/* Cards on wide screens; when compact each survivor becomes a one-line row */}
+          <div className="grid grid-cols-5 gap-16 compact:grid-cols-2 compact:gap-x-8 compact:gap-y-5 narrow:grid-cols-1">
             {survivors.map((survivor) => {
               const dead = !isAlive(survivor);
               const tone = STATUS_COLOR[survivor.status];
@@ -154,22 +228,37 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
               return (
                 <article
                   key={survivor.id}
-                  className={`survivor-card card-${tone}${dead ? " card-dead" : ""}`}
+                  className={`flex min-w-0 flex-col gap-13 rounded border bg-panel p-16 compact:grid compact:grid-cols-[auto_minmax(0,1fr)_auto_calc(80*var(--u))] compact:items-center compact:gap-x-8 compact:px-8 compact:py-3 ${
+                    // Dead survivors keep their card but fade to gray, whatever their last status
+                    dead ? "border-line opacity-45 grayscale" : CARD_TONE[tone]
+                  }`}
                 >
-                  <div className="survivor-top">
-                    <div className={`avatar border-${tone}`}>{initials(survivor.name)}</div>
-                    <span className={`chip chip-${tone}`}>
+                  <div className="flex flex-wrap items-center gap-x-10 gap-y-8 compact:contents">
+                    <div
+                      className={`flex size-49 shrink-0 items-center justify-center rounded-full border bg-panel-2 font-display text-[length:calc(21.5*var(--u))] compact:col-start-1 compact:row-start-1 compact:size-22 compact:text-[length:calc(10*var(--u))] ${BORDER_TONE[tone]}`}
+                    >
+                      {initials(survivor.name)}
+                    </div>
+                    <span
+                      className={`rounded-[3px] border px-[0.7em] py-[0.27em] font-label text-[length:calc(10.7*var(--u))] tracking-[0.08em] whitespace-nowrap compact:col-start-3 compact:row-start-1 compact:text-[length:calc(9.5*var(--u))] ${CHIP_TONE[tone]}`}
+                    >
                       {dead ? "DEAD" : survivor.status.toUpperCase()}
                     </span>
                   </div>
-                  <div className="survivor-info">
-                    <span className="survivor-name">{survivor.name}</span>
-                    <span className="survivor-role">{survivor.role}</span>
+                  <div className="flex min-w-0 flex-col gap-2 compact:col-start-2 compact:row-start-1 compact:flex-row compact:items-baseline compact:gap-6">
+                    <span className="truncate text-[length:calc(21*var(--u))] compact:shrink-0 compact:text-[length:calc(13*var(--u))]">
+                      {survivor.name}
+                    </span>
+                    <span className="truncate text-[length:calc(16*var(--u))] text-muted compact:text-[length:calc(11*var(--u))]">
+                      {survivor.role}
+                    </span>
                   </div>
-                  <div className="health">
-                    <div className="health-row">
-                      <span className="health-label">HEALTH</span>
-                      <span className={`text-${healthTone}`}>{survivor.health}</span>
+                  <div className="flex flex-col gap-4 compact:col-start-4 compact:row-start-1 compact:gap-2">
+                    <div
+                      className={`${ROW} font-label text-[length:calc(12*var(--u))] compact:text-[length:calc(9*var(--u))]`}
+                    >
+                      <span className="tracking-[0.1em] text-muted">HEALTH</span>
+                      <span className={TEXT_TONE[healthTone]}>{survivor.health}</span>
                     </div>
                     <Bar value={survivor.health} tone={healthTone} thin />
                   </div>
@@ -180,10 +269,14 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
         </section>
       </main>
 
-      <footer className="dashboard-footer">
-        <button className="btn btn-primary" onClick={onBeginDay}>
+      <footer className="flex shrink-0 justify-end px-56 pt-36 pb-40 compact:px-12 compact:pt-10 compact:pb-[calc(10*var(--u)_+_env(safe-area-inset-bottom))]">
+        <Button
+          variant="primary"
+          className="block min-h-0 min-w-[10em] px-[1.1em] py-[0.64em] text-[length:calc(23*var(--u))] compact:text-[length:calc(18*var(--u))] narrow:w-full"
+          onClick={onBeginDay}
+        >
           Begin Day&nbsp;&nbsp;→
-        </button>
+        </Button>
       </footer>
     </div>
   );
