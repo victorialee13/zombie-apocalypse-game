@@ -148,13 +148,19 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
 
           <div className="survivor-grid">
             {survivors.map((survivor) => {
+              const dead = !isAlive(survivor);
               const tone = STATUS_COLOR[survivor.status];
               const healthTone: ColorStatus = survivor.health < LOW_HEALTH ? "red" : "green";
               return (
-                <article key={survivor.id} className={`survivor-card card-${tone}`}>
+                <article
+                  key={survivor.id}
+                  className={`survivor-card card-${tone}${dead ? " card-dead" : ""}`}
+                >
                   <div className="survivor-top">
                     <div className={`avatar border-${tone}`}>{initials(survivor.name)}</div>
-                    <span className={`chip chip-${tone}`}>{survivor.status.toUpperCase()}</span>
+                    <span className={`chip chip-${tone}`}>
+                      {dead ? "DEAD" : survivor.status.toUpperCase()}
+                    </span>
                   </div>
                   <div className="survivor-info">
                     <span className="survivor-name">{survivor.name}</span>
