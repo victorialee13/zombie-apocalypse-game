@@ -1,5 +1,41 @@
-body {
-  margin: 0;
-  background: #0e0f0c;
-  color: #e9e4d4;
+@import "tailwindcss";
+
+/* Design tokens shared by every screen — each becomes a utility (bg-panel, text-muted, font-display, ...) */
+@theme {
+  --color-bg: #0e0f0c;
+  --color-panel: #181a15;
+  --color-panel-2: #22251e;
+  --color-line: #34382d;
+  --color-fg: #e9e4d4;
+  --color-muted: #8e8a7c;
+  --color-blood: #b3261e;
+  --color-amber: #d9a441;
+
+  --animate-live-pulse: live-pulse 1.6s ease-in-out infinite;
+
+  @keyframes live-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+}
+
+/* Font families come from next/font in layout.tsx */
+@theme inline {
+  --font-display: var(--font-freckle-face), cursive;
+  --font-body: var(--font-bellefair), serif;
+  --font-label: var(--font-varela-round), sans-serif;
+  --font-mono: var(--font-share-tech-mono), monospace;
+}
+
+/* Red glow behind each screen */
+@utility bg-vignette {
+  background-image: radial-gradient(ellipse closest-side at center, #3a1512 0%, #120f0c 60%, #0a0a08 100%);
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-body text-fg;
+    line-height: normal;
+  }
 }
