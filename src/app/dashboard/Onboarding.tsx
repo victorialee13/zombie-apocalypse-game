@@ -181,7 +181,6 @@ function buildSteps(survivors: Survivor[]): Step[] {
       content: (
         <>
           <p className="text-[length:calc(19*var(--t))] text-fg/80">
-            Remember the three rules and you’ll give them a fighting chance.
           </p>
           <ul className="flex flex-col gap-12">
             <Rule tone="amber" title="Keep the stores stocked">
@@ -261,26 +260,31 @@ export default function Onboarding({ survivors, onBeginDay }: OnboardingProps) {
   }, []);
 
   // Keyed on step rather than current, since the steps are rebuilt every render
-  useLayoutEffect(() => {
-    if (step === null) return;
-    const current = buildSteps([])[step];
+useLayoutEffect(() => {
+  if (step === null) return;
+  const current = buildSteps([])[step];
+  let frame = 0;
+  let prev = "";
 
-    function update() {
-      const popover = popoverRef.current;
-      const target = current.target && document.querySelector(`[data-tour="${current.target}"]`);
-      if (!popover) return;
-      if (!target) {
-        setLayout({ spot: null, popover: null, side: "bottom", arrow: 0 });
-        return;
+  function update() {
+    const popover = popoverRef.current;
+    if (popover) {
+      const target = current.target ? document.querySelector(`[data-tour="${current.target}"]`) : null;
+      const next: Layout = target
+        ? measure(target.getBoundingClientRect(), popover, current.side ?? "bottom", popover.offsetWidth / current.width)
+        : { spot: null, popover: null, side: "bottom", arrow: 0 };
+      const key = JSON.stringify(next);
+      if (key !== prev) {
+        prev = key;
+        setLayout(next);
       }
-      const k = popover.offsetWidth / current.width;
-      setLayout(measure(target.getBoundingClientRect(), popover, current.side ?? "bottom", k));
     }
+    frame = requestAnimationFrame(update);
+  }
 
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [step]);
+  update();
+  return () => cancelAnimationFrame(frame);
+}, [step]);
 
   function close() {
     localStorage.setItem(SEEN_KEY, "1");

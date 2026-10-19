@@ -29,7 +29,6 @@ export function loadSettings(): Settings {
   if (!saved) return DEFAULT_SETTINGS;
 
   const settings: Settings = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
-  if (settings.difficulty === "Nightmare") settings.difficulty = DEFAULT_SETTINGS.difficulty;
   return settings;
 }
 

@@ -20,7 +20,7 @@ export const STATUS_COLOR: Record<Status, ColorStatus> = {
   Scared: "amber",
 };
 
-export const LOW_HEALTH = 50; // Change to 30 perhaps
+export const LOW_HEALTH = 30;
 
 //Const profiles (placeholders)
 export const STARTING_SURVIVORS: Survivor[] = [
@@ -29,7 +29,7 @@ export const STARTING_SURVIVORS: Survivor[] = [
   { id: "blake", name: "Blake Butler", role: "Engineer", health: 85, status: "Healthy" },
   { id: "andrei", name: "Andrei Piliguzov", role: "Guard", health: 95, status: "Healthy" },
   { id: "lena", name: "Lena Park", role: "Cook", health: 70, status: "Hungry" },
-  { id: "sam", name: "Sam Reyes", role: "Mechanic", health: 40, status: "Injured" },
+  { id: "soliday", name: "Soliday Ek", role: "Mechanic", health: 30, status: "Injured" },
   { id: "iris", name: "Iris Novak", role: "Teacher", health: 80, status: "Healthy" },
   { id: "theo", name: "Theo Grant", role: "Farmer", health: 60, status: "Exhausted" },
   { id: "ethan", name: "Ethan Chao", role: "Kid · 12", health: 85, status: "Scared" },
