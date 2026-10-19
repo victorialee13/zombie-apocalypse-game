@@ -3,33 +3,13 @@
 import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import Panel from "../../components/Panel";
-
-type Settings = {
-  masterVolume: number;
-  music: number;
-  soundEffects: number;
-  difficulty: string;
-  textSpeed: string;
-  brightness: number;
-  textSize: string;
-};
-
-const DEFAULT_SETTINGS: Settings = {
-  masterVolume: 80,
-  music: 60,
-  soundEffects: 90,
-  difficulty: "Standard",
-  textSpeed: "Normal",
-  brightness: 55,
-  textSize: "Medium",
-};
-
-const STORAGE_KEY = "zombie-settings";
-
-function loadSettings(): Settings {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
-}
+import {
+  DEFAULT_SETTINGS,
+  applyBrightness,
+  loadSettings,
+  saveSettings,
+  type Settings,
+} from "../../game/settings";
 
 type SettingsPageProps = {
   onBack?: () => void;
@@ -38,17 +18,21 @@ type SettingsPageProps = {
 export default function SettingsPage({ onBack }: SettingsPageProps) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
-  // localStorage only exists in the browser, so load saved settings after mount
   useEffect(() => {
     setSettings(loadSettings());
+    return () => applyBrightness(loadSettings().brightness);
   }, []);
+
+  useEffect(() => {
+    applyBrightness(settings.brightness);
+  }, [settings.brightness]);
 
   function update(key: keyof Settings, value: number | string) {
     setSettings({ ...settings, [key]: value });
   }
 
   function apply() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    saveSettings(settings);
   }
 
   function reset() {
@@ -108,14 +92,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
           {slider("Master volume", "masterVolume")}
           {slider("Music", "music")}
           {slider("Sound effects", "soundEffects")}
+          {choices("Mute all sound", "muteAll", ["Off", "On"])}
         </Panel>
 
         <Panel title="Gameplay">
-          {choices("Difficulty", "difficulty", ["Survivor", "Standard", "Nightmare"])}
+          {choices("Difficulty", "difficulty", ["Survivor", "Standard"])}
           <p className="-mt-2 text-sm/[normal] text-muted">
             Changes starting supplies, event severity, and how fast the horde adapts.
           </p>
           {choices("Text speed", "textSpeed", ["Slow", "Normal", "Instant"])}
+          {choices("Confirm decisions", "confirmDecisions", ["Off", "On"])}
         </Panel>
 
         <Panel title="Display & Access">

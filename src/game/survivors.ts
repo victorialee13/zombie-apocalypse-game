@@ -26,8 +26,8 @@ export const LOW_HEALTH = 50; // Change to 30 perhaps
 export const STARTING_SURVIVORS: Survivor[] = [
   { id: "maya", name: "Maya Chen", role: "Medic", health: 45, status: "Sick" },
   { id: "vic", name: "Victoria Lee", role: "Scout", health: 90, status: "Healthy" },
-  { id: "ruth", name: "Ruth Alvarez", role: "Engineer", health: 85, status: "Healthy" },
-  { id: "kofi", name: "Kofi Mensah", role: "Guard", health: 95, status: "Healthy" },
+  { id: "blake", name: "Blake Butler", role: "Engineer", health: 85, status: "Healthy" },
+  { id: "andrei", name: "Andrei Piliguzov", role: "Guard", health: 95, status: "Healthy" },
   { id: "lena", name: "Lena Park", role: "Cook", health: 70, status: "Hungry" },
   { id: "sam", name: "Sam Reyes", role: "Mechanic", health: 40, status: "Injured" },
   { id: "iris", name: "Iris Novak", role: "Teacher", health: 80, status: "Healthy" },

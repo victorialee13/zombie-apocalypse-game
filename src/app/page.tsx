@@ -10,12 +10,14 @@ export default function LandingPage() {
         <span className="block">Apocalypse</span>
       </h1>
 
-      {/* Continue and How to Play don't have screens yet */}
+      {/* How to Play doesn't have a screen yet. Continue opens the dashboard until saving exists */}
       <nav className="grid w-[340px] max-w-full grid-cols-2 gap-x-3 gap-y-[13px]">
         <Button href="/dashboard" variant="primary" className="col-span-2">
           Start
         </Button>
-        <Button className="col-span-2">Continue</Button>
+        <Button href="/dashboard" className="col-span-2">
+          Continue
+        </Button>
         <Button className="px-0">How to Play</Button>
         <Button href="/settings" className="px-0">
           Settings

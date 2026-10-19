@@ -53,5 +53,6 @@
   body {
     @apply bg-bg font-body text-fg;
     line-height: normal;
+    filter: brightness(var(--brightness, 1));
   }
 }
