@@ -13,47 +13,8 @@ import {
   type Supplies,
 } from "../../game/supplies";
 import { LOW_HEALTH, STATUS_COLOR, isAlive, type Survivor } from "../../game/survivors";
-
-// Tailwind only generates classes it can find written out in full, so each tone maps to complete class names
-const TEXT_TONE: Record<ColorStatus, string> = {
-  green: "text-green",
-  amber: "text-amber",
-  red: "text-blood",
-  blue: "text-blue",
-  purple: "text-purple",
-};
-
-const FILL_TONE: Record<ColorStatus, string> = {
-  green: "bg-green",
-  amber: "bg-amber",
-  red: "bg-blood",
-  blue: "bg-blue",
-  purple: "bg-purple",
-};
-
-const BORDER_TONE: Record<ColorStatus, string> = {
-  green: "border-green",
-  amber: "border-amber",
-  red: "border-blood",
-  blue: "border-blue",
-  purple: "border-purple",
-};
-
-const CARD_TONE: Record<ColorStatus, string> = {
-  green: "border-line",
-  amber: "border-amber/70",
-  red: "border-blood/70",
-  blue: "border-line",
-  purple: "border-line",
-};
-
-const CHIP_TONE: Record<ColorStatus, string> = {
-  green: "border-green/60 bg-green/16 text-green",
-  amber: "border-amber/60 bg-amber/16 text-amber",
-  red: "border-blood/60 bg-blood/16 text-blood",
-  blue: "border-blue/60 bg-blue/16 text-blue",
-  purple: "border-purple/60 bg-purple/16 text-purple",
-};
+import Onboarding from "./Onboarding";
+import { BORDER_TONE, CARD_TONE, CHIP_TONE, FILL_TONE, TEXT_TONE } from "./tones";
 
 const ROW = "flex items-center justify-between gap-8";
 const HEADING =
@@ -175,7 +136,9 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
       </header>
 
       <main className="flex min-h-0 flex-1 items-start gap-24 px-36 pt-24 compact:flex-col compact:items-stretch compact:gap-10 compact:px-12 compact:pt-10">
-        <section className="flex w-360 shrink-0 flex-col gap-11 rounded border border-line bg-panel px-23 py-20 compact:w-auto compact:gap-8 compact:px-12 compact:py-10">
+        <section
+          data-tour="supplies"
+          className="flex w-360 shrink-0 flex-col gap-11 rounded border border-line bg-panel px-23 py-20 compact:w-auto compact:gap-8 compact:px-12 compact:py-10">
           <h2 className={HEADING}>Supplies</h2>
           <div className="flex flex-col gap-11 compact:grid compact:grid-cols-4 compact:gap-8 narrow:grid-cols-2">
             {SUPPLY_IDS.map((id) => {
@@ -209,7 +172,7 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
           </div>
         </section>
 
-        <section className="flex min-w-0 flex-1 flex-col gap-16 compact:gap-8">
+        <section data-tour="survivors" className="flex min-w-0 flex-1 flex-col gap-16 compact:gap-8">
           <div className="flex items-center justify-between gap-12">
             <h2 className={HEADING}>Survivors</h2>
             {needAttention > 0 && (
@@ -274,10 +237,13 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
           variant="primary"
           className="block min-h-0 min-w-[10em] px-[1.1em] py-[0.64em] text-[length:calc(23*var(--u))] compact:text-[length:calc(18*var(--u))] narrow:w-full"
           onClick={onBeginDay}
+          data-tour="begin-day"
         >
           Begin Day&nbsp;&nbsp;→
         </Button>
       </footer>
+
+      <Onboarding survivors={survivors} onBeginDay={onBeginDay} />
     </div>
   );
 }
