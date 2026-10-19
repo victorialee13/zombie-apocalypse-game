@@ -1,1 +1,1 @@
-export const TOTAL_DAYS = 10;
+export const TOTAL_DAYS = 7;
