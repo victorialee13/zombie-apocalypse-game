@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import Button from "../../components/Button";
 import type { ColorStatus } from "../../game/colors";
 import { TOTAL_DAYS } from "../../game/rules";
@@ -101,9 +101,10 @@ type DashboardPageProps = {
   supplies: Supplies;
   survivors: Survivor[];
   onBeginDay?: () => void;
+  children?: ReactNode; // overlays like the day's event, rendered inside so they share the screen's scale
 };
 
-export default function DashboardPage({ day, supplies, survivors, onBeginDay }: DashboardPageProps) {
+export default function DashboardPage({ day, supplies, survivors, onBeginDay, children }: DashboardPageProps) {
   useDisableZoom();
 
   const alive = survivors.filter(isAlive);
@@ -244,6 +245,7 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay }: 
       </footer>
 
       <Onboarding survivors={survivors} onBeginDay={onBeginDay} />
+      {children}
     </div>
   );
 }

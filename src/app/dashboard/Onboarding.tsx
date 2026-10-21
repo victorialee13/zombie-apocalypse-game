@@ -3,7 +3,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Button from "../../components/Button";
 import type { ColorStatus } from "../../game/colors";
-import { STATUS_COLOR, type Status, type Survivor } from "../../game/survivors";
+import { STATUS_COLOR, firstNameByRole, type Status, type Survivor } from "../../game/survivors";
+import { BODY, BUTTON, CARD, LABEL, NOTE_TEXT, NOTE_TITLE, OVERLAY_SCALE } from "./Modal";
 import { CHIP_TONE, FILL_TONE } from "./tones";
 
 const SEEN_KEY = "zombie-tutorial-seen";
@@ -28,22 +29,12 @@ type Layout = {
 
 const CHIP_STATUSES: Status[] = ["Healthy", "Hungry", "Exhausted", "Sick", "Injured"];
 
-const LABEL = "font-label text-[length:calc(12*var(--t))] tracking-[0.14em] text-amber";
-const BODY = "text-[length:calc(17*var(--t))] leading-[1.5]";
-const NOTE_TITLE = "text-[length:calc(16*var(--t))]";
-const NOTE_TEXT = "text-[length:calc(13*var(--t))] leading-[1.35] text-muted";
-const BUTTON = "min-h-0 px-[1.1em] py-[0.45em] text-[length:calc(17*var(--t))]";
-
 // Clip-path triangles pointing back at the highlighted element
 const ARROW: Record<Side, string> = {
   right: "-left-10 h-16 w-10 -translate-y-1/2 [clip-path:polygon(100%_0,0_50%,100%_100%)]",
   bottom: "-top-10 h-10 w-16 -translate-x-1/2 [clip-path:polygon(50%_0,100%_100%,0_100%)]",
   top: "-bottom-10 h-10 w-16 -translate-x-1/2 [clip-path:polygon(0_0,100%_0,50%_100%)]",
 };
-
-function firstName(survivors: Survivor[], role: string) {
-  return survivors.find((s) => s.role === role)?.name.split(" ")[0] ?? `the ${role.toLowerCase()}`;
-}
 
 function Dot({ tone }: { tone: ColorStatus }) {
   return <span className={`mt-[0.45em] size-7 shrink-0 rounded-full ${FILL_TONE[tone]}`} />;
@@ -141,8 +132,8 @@ function buildSteps(survivors: Survivor[]): Step[] {
               You can’t bring anyone back. Losing one hurts the whole group.
             </Note>
             <Note tone="blue" title="Roles matter">
-              {firstName(survivors, "Medic")} is your only medic. {firstName(survivors, "Ex-Soldier")} and{" "}
-              {firstName(survivors, "Guard")} are your best defenders.
+              {firstNameByRole(survivors, "Medic")} is your only medic. {firstNameByRole(survivors, "Ex-Soldier")} and{" "}
+              {firstNameByRole(survivors, "Guard")} are your best defenders.
             </Note>
           </ul>
         </>
@@ -341,7 +332,7 @@ useLayoutEffect(() => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
-      className={`flex max-w-[calc(100vw-24px)] flex-col gap-16 rounded-lg border border-blood/70 bg-panel shadow-[0_20px_60px_rgb(0_0_0/0.6)] ${
+      className={`flex max-w-[calc(100vw-24px)] flex-col gap-16 ${CARD} ${
         centered ? "items-stretch px-40 pt-32 pb-28 text-center" : "absolute p-24"
       }`}
       style={{
@@ -398,12 +389,8 @@ useLayoutEffect(() => {
     </div>
   );
 
-  /*
-   * --t is one design pixel for the tutorial: the dashboard's --u, shrunk when compact since --u
-   * there is measured against a smaller design. Spacing classes inside count in --t.
-   */
   return (
-    <div className="fixed inset-0 z-50 [--spacing:var(--t)] [--t:var(--u)] compact:[--t:calc(var(--u)*0.75)] narrow:[--t:calc(var(--u)*0.85)]">
+    <div className={`fixed inset-0 z-50 ${OVERLAY_SCALE}`}>
       {layout?.spot ? (
         // The huge shadow dims everything around the highlighted element
         <div

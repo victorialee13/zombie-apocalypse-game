@@ -39,3 +39,12 @@ export const STARTING_SURVIVORS: Survivor[] = [
 export function isAlive(survivor: Survivor) {
   return survivor.health > 0;
 }
+
+export function clampHealth(health: number) {
+  return Math.max(0, Math.min(100, health));
+}
+
+// Story text refers to survivors by role, so it keeps working if the roster changes
+export function firstNameByRole(survivors: Survivor[], role: string) {
+  return survivors.find((s) => s.role === role)?.name.split(" ")[0] ?? `the ${role.toLowerCase()}`;
+}

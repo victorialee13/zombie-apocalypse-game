@@ -3,7 +3,7 @@ import type { ColorStatus } from "./colors";
 export const SUPPLY_IDS = ["food", "water", "medicine", "ammo"] as const;
 export type SupplyId = (typeof SUPPLY_IDS)[number];
 
-type Usage = { per: "day"; perSurvivor: number } | { per: "raid"; amount: number };
+type Usage = { per: "day"; perSurvivor: number } | { per: "raid" | "patient"; amount: number };
 
 type SupplyInfo = {
   name: string;
@@ -16,7 +16,7 @@ type SupplyInfo = {
 export const SUPPLY_INFO: Record<SupplyId, SupplyInfo> = {
   food: { name: "Food", unit: "rations", capacity: 50, color: "amber", usage: { per: "day", perSurvivor: 1 } },
   water: { name: "Water", unit: "L", capacity: 50, color: "blue", usage: { per: "day", perSurvivor: 1 } },
-  medicine: { name: "Medicine", unit: "kits", capacity: 20, color: "purple", usage: { per: "day", perSurvivor: 0 } },
+  medicine: { name: "Medicine", unit: "kits", capacity: 20, color: "purple", usage: { per: "patient", amount: 1 } },
   ammo: { name: "Weapons & Ammo", unit: "rounds", capacity: 76, color: "green", usage: { per: "raid", amount: 6 } },
 };
 
