@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Button from "../../components/Button";
 import type { ColorStatus } from "../../game/colors";
 import { TOTAL_DAYS } from "../../game/rules";
@@ -14,6 +14,7 @@ import {
 } from "../../game/supplies";
 import { LOW_HEALTH, STATUS_COLOR, isAlive, type Survivor } from "../../game/survivors";
 import Onboarding from "./Onboarding";
+import PauseMenu from "./PauseMenu";
 import { BORDER_TONE, CARD_TONE, CHIP_TONE, FILL_TONE, TEXT_TONE } from "./tones";
 
 const ROW = "flex items-center justify-between gap-8";
@@ -96,6 +97,16 @@ function useDisableZoom() {
   }, []);
 }
 
+// Same gear as the Figma mockup (Lucide "settings")
+function CogIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="size-full">
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 type DashboardPageProps = {
   day: number;
   supplies: Supplies;
@@ -106,6 +117,19 @@ type DashboardPageProps = {
 
 export default function DashboardPage({ day, supplies, survivors, onBeginDay, children }: DashboardPageProps) {
   useDisableZoom();
+  const [paused, setPaused] = useState(false);
+  // Bumped by the pause menu's How to Play to replay the tutorial without leaving the run
+  const [tutorialRuns, setTutorialRuns] = useState(0);
+
+  // Esc opens the pause menu; the menu handles Esc itself once open. The tutorial claims Esc first.
+  useEffect(() => {
+    if (paused) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !e.defaultPrevented) setPaused(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [paused]);
 
   const alive = survivors.filter(isAlive);
   const needAttention = alive.filter((s) => s.status !== "Healthy").length;
@@ -123,16 +147,27 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
           <span className="text-muted">/ {TOTAL_DAYS}</span>
         </div>
 
-        <div className="flex w-200 flex-col gap-6 compact:w-150 compact:gap-4">
-          <div
-            className={`${ROW} font-label text-[length:calc(13.5*var(--u))] compact:text-[length:calc(10*var(--u))]`}
-          >
-            <span className="tracking-[0.1em] whitespace-nowrap text-muted">SURVIVORS ALIVE</span>
-            <span className="text-green">
-              {alive.length}/{survivors.length}
-            </span>
+        <div className="flex items-center gap-24 compact:gap-12">
+          <div className="flex w-200 flex-col gap-6 compact:w-150 compact:gap-4">
+            <div
+              className={`${ROW} font-label text-[length:calc(13.5*var(--u))] compact:text-[length:calc(10*var(--u))]`}
+            >
+              <span className="tracking-[0.1em] whitespace-nowrap text-muted">SURVIVORS ALIVE</span>
+              <span className="text-green">
+                {alive.length}/{survivors.length}
+              </span>
+            </div>
+            <Bar value={percent(alive.length, survivors.length)} tone="green" />
           </div>
-          <Bar value={percent(alive.length, survivors.length)} tone="green" />
+          <button
+            aria-label="Pause menu"
+            title="Pause (Esc)"
+            // The ::after box widens the tap target to about 44px without changing how the cog looks
+            className="relative size-26 shrink-0 cursor-pointer text-muted transition-colors after:absolute after:-inset-10 hover:text-fg compact:size-20 compact:after:-inset-12"
+            onClick={() => setPaused(true)}
+          >
+            <CogIcon />
+          </button>
         </div>
       </header>
 
@@ -244,8 +279,17 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
         </Button>
       </footer>
 
-      <Onboarding survivors={survivors} onBeginDay={onBeginDay} />
+      <Onboarding survivors={survivors} onBeginDay={onBeginDay} replay={tutorialRuns} />
       {children}
+      {paused && (
+        <PauseMenu
+          onResume={() => setPaused(false)}
+          onHowToPlay={() => {
+            setPaused(false);
+            setTutorialRuns((n) => n + 1);
+          }}
+        />
+      )}
     </div>
   );
 }

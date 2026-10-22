@@ -233,9 +233,10 @@ function measure(target: DOMRect, popover: HTMLElement, preferred: Side, k: numb
 type OnboardingProps = {
   survivors: Survivor[];
   onBeginDay?: () => void;
+  replay?: number; // each bump restarts the tutorial (How to Play in the pause menu)
 };
 
-export default function Onboarding({ survivors, onBeginDay }: OnboardingProps) {
+export default function Onboarding({ survivors, onBeginDay, replay = 0 }: OnboardingProps) {
   const [step, setStep] = useState<number | null>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -249,6 +250,10 @@ export default function Onboarding({ survivors, onBeginDay }: OnboardingProps) {
     const replay = new URLSearchParams(window.location.search).has("tutorial");
     if (replay || !localStorage.getItem(SEEN_KEY)) setStep(0);
   }, []);
+
+  useEffect(() => {
+    if (replay > 0) setStep(0);
+  }, [replay]);
 
   // Keyed on step rather than current, since the steps are rebuilt every render
 useLayoutEffect(() => {
@@ -300,12 +305,16 @@ useLayoutEffect(() => {
   useEffect(() => {
     if (step === null) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") {
+        e.preventDefault(); // so the dashboard doesn't also open the pause menu
+        close();
+      }
       else if (e.key === "ArrowRight" && step < last) setStep(step + 1);
       else if (e.key === "ArrowLeft" && step > 0) setStep(step - 1);
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    // Capture phase runs before the dashboard's Esc listener
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
   });
 
   if (step === null || !current) return null;
