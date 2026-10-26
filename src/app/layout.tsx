@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bellefair, Freckle_Face, Share_Tech_Mono, Varela_Round } from "next/font/google";
 import type { ReactNode } from "react";
 import BrightnessSync from "../components/BrightnessSync";
+import MusicSync from "../components/MusicSync";
 import "./globals.css";
 
 const bellefair = Bellefair({ weight: "400", subsets: ["latin"], variable: "--font-bellefair" });
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={fonts}>
       <body>
         <BrightnessSync />
+        <MusicSync />
         {children}
       </body>
     </html>

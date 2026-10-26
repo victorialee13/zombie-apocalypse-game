@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Button from "../../components/Button";
+import { applyMusicVolume } from "../../game/music";
 import { applyBrightness, loadSettings, saveSettings, type Settings } from "../../game/settings";
 import { BODY, BUTTON, CARD, LABEL, OVERLAY_SCALE } from "./Modal";
 
@@ -41,6 +42,7 @@ export default function PauseMenu({ onResume, onHowToPlay }: PauseMenuProps) {
     setSettings(next);
     saveSettings(next);
     if (key === "brightness") applyBrightness(Number(value));
+    else applyMusicVolume(next);
   }
 
   function slider(label: string, key: "masterVolume" | "brightness") {

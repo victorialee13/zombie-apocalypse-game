@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import Panel from "../../components/Panel";
+import { applyMusicVolume } from "../../game/music";
 import {
   DEFAULT_SETTINGS,
   applyBrightness,
@@ -20,12 +21,21 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
 
   useEffect(() => {
     setSettings(loadSettings());
-    return () => applyBrightness(loadSettings().brightness);
+    // Leaving without Apply puts the saved brightness and volume back
+    return () => {
+      applyBrightness(loadSettings().brightness);
+      applyMusicVolume(loadSettings());
+    };
   }, []);
 
   useEffect(() => {
     applyBrightness(settings.brightness);
   }, [settings.brightness]);
+
+  // Preview volume changes live, like brightness
+  useEffect(() => {
+    applyMusicVolume(settings);
+  }, [settings]);
 
   function update(key: keyof Settings, value: number | string) {
     setSettings({ ...settings, [key]: value });
