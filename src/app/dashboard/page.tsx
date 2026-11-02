@@ -4,16 +4,20 @@ import { useState } from "react";
 import { applyChoice, eventForDay, type Choice, type DayEvent } from "../../game/events";
 import { resolveNight, type ReportLine } from "../../game/night";
 import { STARTING_SUPPLIES, type Supplies } from "../../game/supplies";
-import { STARTING_SURVIVORS } from "../../game/survivors";
+import { TOTAL_DAYS } from "../../game/rules";
+import { STARTING_SURVIVORS, isAlive } from "../../game/survivors";
 import DashboardPage from "./DashboardPage";
 import EventModal from "./EventModal";
+import GameOverModal from "./GameOverModal";
 import NightModal from "./NightModal";
 
-// Each day goes dashboard → event (pick a choice) → night report → the next day's dashboard
+// Each day goes dashboard → event (pick a choice) → night report → the next day's dashboard.
+// The game ends after the night when everyone is dead or the last day is over.
 type Phase =
   | { kind: "dashboard" }
   | { kind: "event"; event: DayEvent }
-  | { kind: "night"; before: Supplies; report: ReportLine[] };
+  | { kind: "night"; before: Supplies; report: ReportLine[] }
+  | { kind: "gameover" };
 
 export default function Dashboard() {
   const [day, setDay] = useState(1);
@@ -41,8 +45,21 @@ export default function Dashboard() {
     setSurvivors(night.survivors);
   }
 
+  const gameOver = day >= TOTAL_DAYS || !survivors.some(isAlive);
+
   function nextDay() {
+    if (gameOver) {
+      setPhase({ kind: "gameover" });
+      return;
+    }
     setDay(day + 1);
+    setPhase({ kind: "dashboard" });
+  }
+
+  function restart() {
+    setDay(1);
+    setSupplies(STARTING_SUPPLIES);
+    setSurvivors(STARTING_SURVIVORS);
     setPhase({ kind: "dashboard" });
   }
 
@@ -63,9 +80,11 @@ export default function Dashboard() {
           before={phase.before}
           after={supplies}
           report={phase.report}
+          final={gameOver}
           onContinue={nextDay}
         />
       )}
+      {phase.kind === "gameover" && <GameOverModal day={day} survivors={survivors} onRestart={restart} />}
     </DashboardPage>
   );
 }

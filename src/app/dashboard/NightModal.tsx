@@ -9,10 +9,11 @@ type NightModalProps = {
   before: Supplies;
   after: Supplies;
   report: ReportLine[];
+  final?: boolean; // the game ends after this night
   onContinue: () => void;
 };
 
-export default function NightModal({ day, before, after, report, onContinue }: NightModalProps) {
+export default function NightModal({ day, before, after, report, final, onContinue }: NightModalProps) {
   return (
     <Modal width={640} label={`DAY ${String(day).padStart(2, "0")} · NIGHT`} title="Night falls">
       <div className="grid grid-cols-4 gap-8 narrow:grid-cols-2">
@@ -48,7 +49,7 @@ export default function NightModal({ day, before, after, report, onContinue }: N
 
       <div className="flex justify-end border-t border-line pt-18">
         <Button variant="primary" className={BUTTON} onClick={onContinue}>
-          On to Day {String(day + 1).padStart(2, "0")}&nbsp;&nbsp;→
+          {final ? "See how it ended" : `On to Day ${String(day + 1).padStart(2, "0")}`}&nbsp;&nbsp;→
         </Button>
       </div>
     </Modal>
