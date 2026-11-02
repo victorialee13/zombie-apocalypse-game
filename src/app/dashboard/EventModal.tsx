@@ -77,7 +77,7 @@ export default function EventModal({ day, event, survivors, onChoose, onNightFal
 
   if (chosen) {
     return (
-      <Modal width={640} label={`${dayLabel} · OUTCOME`} title={chosen.title}>
+      <Modal minimizable width={640} label={`${dayLabel} · OUTCOME`} title={chosen.title}>
         <p className={BODY}>{chosen.outcome}</p>
         <Chips effects={describeEffects(chosen, survivors)} />
         <div className="flex justify-end border-t border-line pt-18">
@@ -90,7 +90,7 @@ export default function EventModal({ day, event, survivors, onChoose, onNightFal
   }
 
   return (
-    <Modal width={960} label={`${dayLabel} · EVENT`} title={event.title}>
+    <Modal minimizable width={960} label={`${dayLabel} · EVENT`} title={event.title}>
       <p className={`${BODY} max-w-[60em]`}>{event.story}</p>
 
       <div className="grid grid-cols-3 gap-12 narrow:grid-cols-1">
