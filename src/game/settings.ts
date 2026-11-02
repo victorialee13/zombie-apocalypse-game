@@ -8,6 +8,7 @@ export type Settings = {
   textSize: string;
   muteAll: string;
   confirmDecisions: string;
+  jumpscares: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -20,6 +21,7 @@ export const DEFAULT_SETTINGS: Settings = {
   textSize: "Medium",
   muteAll: "Off",
   confirmDecisions: "On",
+  jumpscares: "On",
 };
 
 const STORAGE_KEY = "zombie-settings";

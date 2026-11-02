@@ -117,6 +117,7 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         <Panel title="Display & Access">
           {slider("Brightness", "brightness")}
           {choices("Text size", "textSize", ["Small", "Medium", "Large"])}
+          {choices("Jumpscares", "jumpscares", ["Off", "On"])}
         </Panel>
       </div>
 
