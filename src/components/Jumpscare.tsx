@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DURATION, nextDelay, playScream } from "../../game/jumpscare";
-import { loadSettings } from "../../game/settings";
+import { useCallback, useEffect, useState } from "react";
+import { DURATION, PEEK_DURATION, nextDelay, playScream } from "../game/jumpscare";
+import { loadSettings } from "../game/settings";
 
 // An original zombie face, drawn rather than loaded so there's no image asset
-function ZombieFace() {
+function ZombieFace({ className }: { className: string }) {
   return (
-    <svg viewBox="0 0 200 240" className="h-[85dvh] max-w-[90vw]" aria-hidden="true">
+    <svg viewBox="0 0 200 240" className={className} aria-hidden="true">
       <defs>
         <radialGradient id="skin" cx="50%" cy="40%" r="60%">
           <stop offset="0%" stopColor="#8a9a6a" />
@@ -44,41 +44,59 @@ function ZombieFace() {
   );
 }
 
-type JumpscareProps = {
-  active: boolean; // only scare while a game is in progress
-};
+export type ScareMode = "full" | "corner";
 
-export default function Jumpscare({ active }: JumpscareProps) {
-  const [showing, setShowing] = useState(false);
+export function scareMode(jumpscares: string): ScareMode {
+  return jumpscares === "On" ? "full" : "corner";
+}
 
+// One scare: a full-screen lunge with a scream, or (jumpscares off) a quiet peek from the bottom corner
+export function ZombieScare({ mode, onDone }: { mode: ScareMode; onDone: () => void }) {
   useEffect(() => {
-    if (!active || showing) return;
-    const settings = loadSettings();
-    if (settings.jumpscares !== "On") return;
-
-    const timer = setTimeout(() => {
-      setShowing(true);
-      playScream(loadSettings());
-    }, nextDelay());
+    const timer = setTimeout(onDone, mode === "full" ? DURATION : PEEK_DURATION);
     return () => clearTimeout(timer);
-  }, [active, showing]);
+  }, [mode, onDone]);
 
-  useEffect(() => {
-    if (!showing) return;
-    const timer = setTimeout(() => setShowing(false), DURATION);
-    return () => clearTimeout(timer);
-  }, [showing]);
-
-  if (!showing) return null;
+  if (mode === "corner") {
+    // Doesn't block clicks, so it never interrupts a decision
+    return (
+      <div className="pointer-events-none fixed right-[2vw] bottom-0 z-100 animate-zombie-peek">
+        <ZombieFace className="h-[22dvh] min-h-[110px]" />
+      </div>
+    );
+  }
 
   return (
     <div
       className="fixed inset-0 z-100 flex cursor-pointer items-center justify-center bg-black/90"
-      onClick={() => setShowing(false)}
+      onClick={onDone}
     >
       <div className="animate-jumpscare">
-        <ZombieFace />
+        <ZombieFace className="h-[85dvh] max-w-[90vw]" />
       </div>
     </div>
   );
+}
+
+type JumpscareProps = {
+  active: boolean; // only scare while a game is in progress
+};
+
+// Schedules scares at random while playing, in whichever form the settings ask for
+export default function Jumpscare({ active }: JumpscareProps) {
+  const [mode, setMode] = useState<ScareMode | null>(null);
+  const done = useCallback(() => setMode(null), []);
+
+  useEffect(() => {
+    if (!active || mode) return;
+    const timer = setTimeout(() => {
+      const settings = loadSettings();
+      const next = scareMode(settings.jumpscares);
+      if (next === "full") playScream(settings);
+      setMode(next);
+    }, nextDelay());
+    return () => clearTimeout(timer);
+  }, [active, mode]);
+
+  return mode ? <ZombieScare mode={mode} onDone={done} /> : null;
 }

@@ -9,7 +9,7 @@ import { STARTING_SURVIVORS, isAlive } from "../../game/survivors";
 import DashboardPage from "./DashboardPage";
 import EventModal from "./EventModal";
 import GameOverModal from "./GameOverModal";
-import Jumpscare from "./Jumpscare";
+import Jumpscare from "../../components/Jumpscare";
 import NightModal from "./NightModal";
 
 // Each day goes dashboard → event (pick a choice) → night report → the next day's dashboard.

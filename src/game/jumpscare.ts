@@ -4,6 +4,7 @@ import type { Settings } from "./settings";
 export const MIN_DELAY = 25_000;
 export const MAX_DELAY = 70_000;
 export const DURATION = 1400;
+export const PEEK_DURATION = 3000; // the corner peek used when jumpscares are off
 
 export function nextDelay() {
   return MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);

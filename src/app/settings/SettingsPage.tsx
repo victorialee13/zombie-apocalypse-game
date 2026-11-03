@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "../../components/Button";
+import { ZombieScare, scareMode, type ScareMode } from "../../components/Jumpscare";
 import Panel from "../../components/Panel";
+import { playScream } from "../../game/jumpscare";
 import { applyMusicVolume } from "../../game/music";
 import {
   DEFAULT_SETTINGS,
@@ -18,6 +20,15 @@ type SettingsPageProps = {
 
 export default function SettingsPage({ onBack }: SettingsPageProps) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const [testScare, setTestScare] = useState<ScareMode | null>(null);
+  const endTest = useCallback(() => setTestScare(null), []);
+
+  // Previews the scare the current (unsaved) settings would give, at the current volume
+  function testJumpscare() {
+    const mode = scareMode(settings.jumpscares);
+    if (mode === "full") playScream(settings);
+    setTestScare(mode);
+  }
 
   useEffect(() => {
     setSettings(loadSettings());
@@ -118,6 +129,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
           {slider("Brightness", "brightness")}
           {choices("Text size", "textSize", ["Small", "Medium", "Large"])}
           {choices("Jumpscares", "jumpscares", ["Off", "On"])}
+          <div className="-mt-2 flex items-center justify-between gap-4">
+            <p className="text-sm/[normal] text-muted">
+              {settings.jumpscares === "On"
+                ? "Zombies lunge at the screen with a scream."
+                : "Zombies quietly peek from the bottom corner instead."}
+            </p>
+            <Button className="min-h-0 shrink-0 px-4 py-1.5 text-base" onClick={testJumpscare} disabled={testScare !== null}>
+              Test
+            </Button>
+          </div>
         </Panel>
       </div>
 
@@ -127,6 +148,8 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
           Apply
         </Button>
       </footer>
+
+      {testScare && <ZombieScare mode={testScare} onDone={endTest} />}
     </div>
   );
 }
