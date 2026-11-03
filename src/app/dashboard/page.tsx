@@ -15,6 +15,7 @@ import { resolveNight, type ReportLine } from "../../game/night";
 import { TOTAL_DAYS } from "../../game/rules";
 import { STARTING_SUPPLIES, type Supplies } from "../../game/supplies";
 import { STARTING_SURVIVORS, isAlive, type Survivor } from "../../game/survivors";
+import Jumpscare from "../../components/Jumpscare";
 import DashboardPage from "./DashboardPage";
 import EndScreen from "./EndScreen";
 import EventModal, { type EventResult } from "./EventModal";
@@ -112,6 +113,7 @@ export default function Dashboard() {
           onContinue={afterNight}
         />
       )}
+      <Jumpscare active={phase.kind !== "end"} />
       {phase.kind === "end" && (
         <EndScreen won={phase.won} day={day} survivors={survivors} results={results} onPlayAgain={playAgain} />
       )}
