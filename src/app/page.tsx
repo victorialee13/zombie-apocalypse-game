@@ -6,8 +6,8 @@ export default function LandingPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-vignette px-6 py-12">
       <h1 className="mb-[22px] text-center font-display text-[length:min(172px,17vw)] leading-[0.88] uppercase">
-        <span className="block">Zombie</span>
-        <span className="block">Apocalypse</span>
+        <span className="block">No tears </span>
+        <span className="block">for the weary</span>
       </h1>
 
       {/* How to Play replays the dashboard tutorial. Continue opens the dashboard until saving exists */}
