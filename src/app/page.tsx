@@ -4,8 +4,9 @@ const CREDITS = ["Soliday Ek", "Victoria Lee", "Andrei Piliguzov", "Ethan Chao"]
 
 export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-vignette px-6 py-12">
-      <h1 className="mb-[22px] text-center font-display text-[length:min(172px,17vw)] leading-[0.88] uppercase">
+    <main className="flex min-h-dvh flex-col items-center justify-center bg-vignette px-6 py-12 [@media(max-height:500px)]:py-4">
+      {/* Shrinks with the window's width or height, so the buttons stay on screen when a phone is sideways */}
+      <h1 className="mb-[22px] text-center font-display text-[length:min(172px,17vw,17dvh)] leading-[0.88] uppercase">
         <span className="block">Zombie</span>
         <span className="block">Apocalypse</span>
       </h1>

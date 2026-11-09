@@ -101,14 +101,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center gap-9 bg-vignette px-24 py-11">
-      <header className="flex items-center justify-between">
-        <Button onClick={onBack}>← Back</Button>
-        <h1 className="font-display text-[88px]">Settings</h1>
-        <div className="w-25" />
+    // One column on phones, two on tablets, three on wide screens
+    <div className="flex min-h-dvh flex-col justify-center gap-6 bg-vignette px-4 py-6 sm:gap-9 sm:px-10 sm:py-11 lg:px-24">
+      <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <Button className="justify-self-start px-4 text-lg whitespace-nowrap sm:px-7 sm:text-[22px] max-sm:min-h-11" onClick={onBack}>
+          ← Back
+        </Button>
+        <h1 className="font-display text-[44px] leading-none sm:text-[72px] lg:text-[88px]">Settings</h1>
       </header>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Panel title="Audio">
           {slider("Master volume", "masterVolume")}
           {slider("Music", "music")}
@@ -142,9 +144,9 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         </Panel>
       </div>
 
-      <footer className="flex justify-end gap-3">
+      <footer className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Button onClick={reset}>Reset to Default</Button>
-        <Button variant="primary" className="min-w-[200px]" onClick={apply}>
+        <Button variant="primary" className="sm:min-w-[200px]" onClick={apply}>
           Apply
         </Button>
       </footer>
