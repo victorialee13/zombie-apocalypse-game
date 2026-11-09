@@ -36,6 +36,9 @@ export const STARTING_SURVIVORS: Survivor[] = [
   { id: "marcus", name: "Marcus Webb", role: "Ex-Soldier", health: 90, status: "Healthy" },
 ];
 
+// Used in place of a role when an effect applies to every survivor
+export const EVERYONE = "everyone";
+
 export function isAlive(survivor: Survivor) {
   return survivor.health > 0;
 }

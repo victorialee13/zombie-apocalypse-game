@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "../../components/Button";
+import { ZombieScare, scareMode, type ScareMode } from "../../components/Jumpscare";
 import Panel from "../../components/Panel";
+import { playScream } from "../../game/jumpscare";
 import { applyMusicVolume } from "../../game/music";
 import {
   DEFAULT_SETTINGS,
@@ -18,6 +20,15 @@ type SettingsPageProps = {
 
 export default function SettingsPage({ onBack }: SettingsPageProps) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const [testScare, setTestScare] = useState<ScareMode | null>(null);
+  const endTest = useCallback(() => setTestScare(null), []);
+
+  // Previews the scare the current (unsaved) settings would give, at the current volume
+  function testJumpscare() {
+    const mode = scareMode(settings.jumpscares);
+    if (mode === "full") playScream(settings);
+    setTestScare(mode);
+  }
 
   useEffect(() => {
     setSettings(loadSettings());
@@ -90,14 +101,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center gap-9 bg-vignette px-24 py-11">
-      <header className="flex items-center justify-between">
-        <Button onClick={onBack}>← Back</Button>
-        <h1 className="font-display text-[88px]">Settings</h1>
-        <div className="w-25" />
+    // One column on phones, two on tablets, three on wide screens
+    <div className="flex min-h-dvh flex-col justify-center gap-6 bg-vignette px-4 py-6 sm:gap-9 sm:px-10 sm:py-11 lg:px-24">
+      <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <Button className="justify-self-start px-4 text-lg whitespace-nowrap sm:px-7 sm:text-[22px] max-sm:min-h-11" onClick={onBack}>
+          ← Back
+        </Button>
+        <h1 className="font-display text-[44px] leading-none sm:text-[72px] lg:text-[88px]">Settings</h1>
       </header>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Panel title="Audio">
           {slider("Master volume", "masterVolume")}
           {slider("Music", "music")}
@@ -117,15 +130,28 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         <Panel title="Display & Access">
           {slider("Brightness", "brightness")}
           {choices("Text size", "textSize", ["Small", "Medium", "Large"])}
+          {choices("Jumpscares", "jumpscares", ["Off", "On"])}
+          <div className="-mt-2 flex items-center justify-between gap-4">
+            <p className="text-sm/[normal] text-muted">
+              {settings.jumpscares === "On"
+                ? "Zombies lunge at the screen with a scream."
+                : "Zombies quietly peek from the bottom corner instead."}
+            </p>
+            <Button className="min-h-0 shrink-0 px-4 py-1.5 text-base" onClick={testJumpscare} disabled={testScare !== null}>
+              Test
+            </Button>
+          </div>
         </Panel>
       </div>
 
-      <footer className="flex justify-end gap-3">
+      <footer className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Button onClick={reset}>Reset to Default</Button>
-        <Button variant="primary" className="min-w-[200px]" onClick={apply}>
+        <Button variant="primary" className="sm:min-w-[200px]" onClick={apply}>
           Apply
         </Button>
       </footer>
+
+      {testScare && <ZombieScare mode={testScare} onDone={endTest} />}
     </div>
   );
 }

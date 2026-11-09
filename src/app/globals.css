@@ -15,11 +15,34 @@
   --color-purple: #9a7fb8;
 
   --animate-live-pulse: live-pulse 1.6s ease-in-out infinite;
+  --animate-jumpscare: jumpscare 1.4s ease-out both;
+  --animate-zombie-peek: zombie-peek 3s ease-in-out both;
 
   @keyframes live-pulse {
     50% {
       opacity: 0.35;
     }
+  }
+
+  /* Lunges at the screen, shudders, then fades back */
+  @keyframes jumpscare {
+    0% { transform: scale(0.2); opacity: 0; }
+    8% { transform: scale(1.15); opacity: 1; }
+    14% { transform: scale(1) translate(-12px, 6px) rotate(-2deg); }
+    20% { transform: scale(1.05) translate(10px, -8px) rotate(2deg); }
+    26% { transform: scale(1) translate(-8px, 4px) rotate(-1deg); }
+    32% { transform: scale(1.02) translate(6px, -2px); }
+    80% { transform: scale(1.04); opacity: 1; }
+    100% { transform: scale(1.1); opacity: 0; }
+  }
+
+  /* Rises halfway out of the bottom edge, sways, then sinks back down */
+  @keyframes zombie-peek {
+    0% { transform: translateY(100%); }
+    20% { transform: translateY(45%) rotate(-4deg); }
+    50% { transform: translateY(42%) rotate(3deg); }
+    80% { transform: translateY(45%) rotate(-2deg); }
+    100% { transform: translateY(100%); }
   }
 }
 

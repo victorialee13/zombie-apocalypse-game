@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState, type ReactNode } from "react";
 
 /*
  * --t is one design pixel for anything drawn over the dashboard: the dashboard's --u, shrunk when
@@ -20,10 +22,29 @@ type ModalProps = {
   label: string;
   title: string;
   children: ReactNode;
+  minimizable?: boolean; // lets the player tuck the card away to check the dashboard behind it
 };
 
 // A centered card over the dimmed dashboard; must be rendered inside the dashboard so --u is defined
-export default function Modal({ width, label, title, children }: ModalProps) {
+export default function Modal({ width, label, title, children, minimizable }: ModalProps) {
+  const [minimized, setMinimized] = useState(false);
+
+  if (minimized) {
+    // A clear layer still covers the dashboard so nothing behind it can be clicked mid-event
+    return (
+      <div className={`fixed inset-0 z-50 flex items-end justify-center p-24 ${OVERLAY_SCALE}`}>
+        <button
+          className={`flex cursor-pointer items-center gap-16 px-24 py-14 hover:brightness-115 ${CARD}`}
+          onClick={() => setMinimized(false)}
+        >
+          <span className={LABEL}>{label}</span>
+          <span className="text-[length:calc(17*var(--t))]">{title}</span>
+          <span className="font-label text-[length:calc(13*var(--t))] text-muted">Show ▴</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-12 ${OVERLAY_SCALE}`}>
       <div
@@ -33,7 +54,17 @@ export default function Modal({ width, label, title, children }: ModalProps) {
         className={`flex max-h-[calc(100dvh-24px)] max-w-[calc(100vw-24px)] flex-col gap-16 overflow-y-auto px-36 pt-28 pb-28 ${CARD}`}
         style={{ width: `calc(${width} * var(--t))` }}
       >
-        <span className={LABEL}>{label}</span>
+        <div className="flex items-center justify-between gap-16">
+          <span className={LABEL}>{label}</span>
+          {minimizable && (
+            <button
+              className="cursor-pointer font-label text-[length:calc(13*var(--t))] tracking-[0.08em] text-muted hover:text-fg"
+              onClick={() => setMinimized(true)}
+            >
+              Minimize ▾
+            </button>
+          )}
+        </div>
         <h2 id="modal-title" className="-mt-4 font-display text-[length:calc(40*var(--t))] leading-[1.05]">
           {title}
         </h2>
