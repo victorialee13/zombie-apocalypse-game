@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Button from "../../components/Button";
+import FullscreenButton from "../../components/FullscreenButton";
 import type { ColorStatus } from "../../game/colors";
 import { TOTAL_DAYS } from "../../game/rules";
 import {
@@ -159,6 +160,7 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
             </div>
             <Bar value={percent(alive.length, survivors.length)} tone="green" />
           </div>
+          <FullscreenButton className="relative size-26 shrink-0 after:absolute after:-inset-10 compact:size-20 compact:after:-inset-12" />
           <button
             aria-label="Pause menu"
             title="Pause (Esc)"

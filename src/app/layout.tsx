@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bellefair, Freckle_Face, Share_Tech_Mono, Varela_Round } from "next/font/google";
 import type { ReactNode } from "react";
 import BrightnessSync from "../components/BrightnessSync";
+import FullscreenShortcut from "../components/FullscreenShortcut";
 import MusicSync from "../components/MusicSync";
 import "./globals.css";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <BrightnessSync />
         <MusicSync />
+        <FullscreenShortcut />
         {children}
       </body>
     </html>

@@ -1,10 +1,13 @@
 import Button from "../components/Button";
+import FullscreenButton from "../components/FullscreenButton";
 
 const CREDITS = ["Soliday Ek", "Victoria Lee", "Andrei Piliguzov", "Ethan Chao"];
 
 export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-vignette px-6 py-12">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-vignette px-6 py-12">
+      {/* p-2.5 pads the 24px icon out to a 44px tap target */}
+      <FullscreenButton className="absolute top-4 right-4 size-11 p-2.5" />
       <h1 className="mb-[22px] text-center font-display text-[length:min(172px,17vw)] leading-[0.88] uppercase">
         <span className="block">Station 4</span>
       </h1>
