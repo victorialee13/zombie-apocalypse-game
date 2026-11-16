@@ -11,7 +11,7 @@ import {
   type DayEvent,
   type OutcomeKind,
 } from "../../game/events";
-import { resolveNight, type ReportLine } from "../../game/night";
+import { needsRationing, resolveNight, type RationPlan, type ReportLine } from "../../game/night";
 import { TOTAL_DAYS } from "../../game/rules";
 import { STARTING_SUPPLIES, type Supplies } from "../../game/supplies";
 import { STARTING_SURVIVORS, isAlive, type Survivor } from "../../game/survivors";
@@ -20,12 +20,14 @@ import DashboardPage from "./DashboardPage";
 import EndScreen from "./EndScreen";
 import EventModal, { type EventResult } from "./EventModal";
 import NightModal from "./NightModal";
+import RationModal from "./RationModal";
 
-// Each day goes dashboard → event (pick a choice, luck decides how it goes) → night report → the next day,
-// until everyone is dead or the last night is over
+// Each day goes dashboard → event (pick a choice, luck decides how it goes) → rations if stores run short
+// → night report → the next day, until everyone is dead or the last night is over
 type Phase =
   | { kind: "dashboard" }
   | { kind: "event"; event: DayEvent; result: EventResult | null }
+  | { kind: "ration" }
   | { kind: "night"; before: Supplies; report: ReportLine[] }
   | { kind: "end"; won: boolean };
 
@@ -59,7 +61,12 @@ export default function Dashboard() {
 
   function nightFalls() {
     if (!anyoneAlive(survivors)) return setPhase({ kind: "end", won: false });
-    const night = resolveNight(supplies, survivors);
+    if (needsRationing(supplies, survivors)) return setPhase({ kind: "ration" });
+    resolve();
+  }
+
+  function resolve(plan?: RationPlan) {
+    const night = resolveNight(supplies, survivors, plan);
     setPhase({ kind: "night", before: supplies, report: night.report });
     setSupplies(night.supplies);
     setSurvivors(night.survivors);
@@ -96,6 +103,9 @@ export default function Dashboard() {
           onChoose={(choice) => choose(phase.event, choice)}
           onContinue={nightFalls}
         />
+      )}
+      {phase.kind === "ration" && (
+        <RationModal day={day} supplies={supplies} survivors={survivors} onConfirm={resolve} />
       )}
       {phase.kind === "night" && (
         <NightModal

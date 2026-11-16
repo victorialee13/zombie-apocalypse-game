@@ -15,26 +15,77 @@ export type NightResult = {
   report: ReportLine[];
 };
 
+// The supplies handed out one per person at night; when they run short, the player picks who gets them
+export const RATIONED = ["food", "water", "medicine"] as const;
+export type Rationed = (typeof RATIONED)[number];
+
+// Survivor ids that receive each rationed supply tonight
+export type RationPlan = Record<Rationed, string[]>;
+
+// What going without costs, shown on the ration screen before the night is resolved
+export const GO_WITHOUT_DAMAGE: Record<Rationed, number> = {
+  food: HUNGER_DAMAGE,
+  water: THIRST_DAMAGE,
+  medicine: UNTREATED_DAMAGE,
+};
+
+export type RationNeed = { candidates: Survivor[]; slots: number };
+
+// Who needs each supply tonight and how many of them the stores can cover
+export function rationNeeds(supplies: Supplies, survivors: Survivor[]): Record<Rationed, RationNeed> {
+  const alive = survivors.filter(isAlive);
+  const patients = alive.filter((s) => s.status === "Sick" || s.status === "Injured");
+  const need = (id: Rationed, candidates: Survivor[]) => ({
+    candidates,
+    slots: Math.min(candidates.length, Math.floor(supplies[id] / usageAmount(id, 1))),
+  });
+  return { food: need("food", alive), water: need("water", alive), medicine: need("medicine", patients) };
+}
+
+// Only worth asking the player when some, but not all, of the people in need can be covered
+export function isShort(need: RationNeed) {
+  return need.slots > 0 && need.slots < need.candidates.length;
+}
+
+export function needsRationing(supplies: Supplies, survivors: Survivor[]) {
+  return Object.values(rationNeeds(supplies, survivors)).some(isShort);
+}
+
+// The plan used when there's no choice to make: supplies go down the roster until they run out
+export function rosterOrderPlan(supplies: Supplies, survivors: Survivor[]): RationPlan {
+  const needs = rationNeeds(supplies, survivors);
+  const firstIds = ({ candidates, slots }: RationNeed) => candidates.slice(0, slots).map((s) => s.id);
+  return { food: firstIds(needs.food), water: firstIds(needs.water), medicine: firstIds(needs.medicine) };
+}
+
 /*
  * Everyone eats and drinks, the sick and injured are treated (or get worse when the kits run out),
- * then the horde tests the walls. When stores run short, whoever is last in the roster goes without.
+ * then the horde tests the walls. When stores run short, the plan says who goes without.
  */
-export function resolveNight(supplies: Supplies, survivors: Survivor[]): NightResult {
+export function resolveNight(
+  supplies: Supplies,
+  survivors: Survivor[],
+  plan: RationPlan = rosterOrderPlan(supplies, survivors),
+): NightResult {
   const next = survivors.map((s) => ({ ...s }));
   const alive = next.filter(isAlive);
   const report: ReportLine[] = [];
   const hurt = (s: Survivor, amount: number) => {
     s.health = clampHealth(s.health - amount);
   };
+  const gets = (id: Rationed) => (s: Survivor) => plan[id].includes(s.id);
+  const goesWithout = (id: Rationed) => (s: Survivor) => !plan[id].includes(s.id);
 
   const patients = alive.filter((s) => s.status === "Sick" || s.status === "Injured");
-  const treated = patients.slice(0, Math.floor(supplies.medicine / usageAmount("medicine", alive.length)));
-  const untreated = patients.slice(treated.length);
+  const treated = patients.filter(gets("medicine"));
+  const untreated = patients.filter(goesWithout("medicine"));
   const untreatedStatus = new Map(untreated.map((s) => [s, s.status]));
 
-  const hungry = alive.slice(supplies.food);
-  const thirsty = alive.slice(supplies.water);
-  const recovered = alive.slice(0, supplies.food).filter((s) => s.status === "Hungry");
+  const fed = alive.filter(gets("food"));
+  const hungry = alive.filter(goesWithout("food"));
+  const watered = alive.filter(gets("water"));
+  const thirsty = alive.filter(goesWithout("water"));
+  const recovered = fed.filter((s) => s.status === "Hungry");
 
   for (const s of treated) s.status = "Healthy";
   for (const s of hungry) {
@@ -81,9 +132,9 @@ export function resolveNight(supplies: Supplies, survivors: Survivor[]): NightRe
 
   return {
     supplies: applySupplyChange(supplies, {
-      food: -usageAmount("food", alive.length),
-      water: -usageAmount("water", alive.length),
-      medicine: -treated.length * usageAmount("medicine", alive.length),
+      food: -fed.length * usageAmount("food", 1),
+      water: -watered.length * usageAmount("water", 1),
+      medicine: -treated.length * usageAmount("medicine", 1),
       ammo: -ammoNeeded,
     }),
     survivors: next,
