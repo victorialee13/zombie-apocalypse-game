@@ -66,7 +66,7 @@ export default function Dashboard() {
   }
 
   function resolve(plan?: RationPlan) {
-    const night = resolveNight(supplies, survivors, plan);
+    const night = resolveNight(day, supplies, survivors, plan);
     setPhase({ kind: "night", before: supplies, report: night.report });
     setSupplies(night.supplies);
     setSurvivors(night.survivors);

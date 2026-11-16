@@ -5,7 +5,23 @@ import { clampHealth, isAlive, type Survivor } from "./survivors";
 export const HUNGER_DAMAGE = 15;
 export const THIRST_DAMAGE = 20;
 export const UNTREATED_DAMAGE = 10;
-export const BREACH_DAMAGE = 15;
+
+// The horde grows every night: holding the walls takes more rounds, and a breach hurts more
+const HORDE_SIZES = ["A few stragglers", "A small pack", "A crowd", "A large crowd", "A swarm", "A huge swarm", "The whole horde"];
+const BREACH_DAMAGE = 15;
+const BREACH_GROWTH = 4;
+const AMMO_GROWTH = 1.5;
+
+export type Horde = { size: string; ammo: number; breachDamage: number };
+
+export function hordeFor(night: number): Horde {
+  const grown = night - 1;
+  return {
+    size: HORDE_SIZES[Math.min(grown, HORDE_SIZES.length - 1)],
+    ammo: usageAmount("ammo", 0) + Math.floor(grown * AMMO_GROWTH),
+    breachDamage: BREACH_DAMAGE + grown * BREACH_GROWTH,
+  };
+}
 
 export type ReportLine = { tone: ColorStatus; text: string };
 
@@ -63,6 +79,7 @@ export function rosterOrderPlan(supplies: Supplies, survivors: Survivor[]): Rati
  * then the horde tests the walls. When stores run short, the plan says who goes without.
  */
 export function resolveNight(
+  night: number,
   supplies: Supplies,
   survivors: Survivor[],
   plan: RationPlan = rosterOrderPlan(supplies, survivors),
@@ -115,14 +132,15 @@ export function resolveNight(
     });
   }
 
-  const ammoNeeded = usageAmount("ammo", alive.length);
+  const horde = hordeFor(night);
+  const ammoNeeded = horde.ammo;
   if (supplies.ammo >= ammoNeeded) {
-    report.push({ tone: "green", text: `The horde hit the walls after dark. ${ammoNeeded} rounds held them off.` });
+    report.push({ tone: "green", text: `${horde.size} hit the walls after dark. ${ammoNeeded} rounds held them off.` });
   } else {
-    for (const s of alive) hurt(s, BREACH_DAMAGE);
+    for (const s of alive) hurt(s, horde.breachDamage);
     report.push({
       tone: "red",
-      text: `Not enough ammo. The horde broke through before you drove them back (−${BREACH_DAMAGE} health to everyone).`,
+      text: `${horde.size} hit the walls and you didn’t have the ${ammoNeeded} rounds to hold them. They broke through before you drove them back (−${horde.breachDamage} health to everyone).`,
     });
   }
 

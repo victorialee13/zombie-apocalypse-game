@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Button from "../../components/Button";
 import FullscreenButton from "../../components/FullscreenButton";
 import type { ColorStatus } from "../../game/colors";
+import { hordeFor } from "../../game/night";
 import { TOTAL_DAYS } from "../../game/rules";
 import {
   SUPPLY_IDS,
@@ -35,10 +36,11 @@ function percent(value: number, max: number) {
   return Math.max(0, Math.min(100, (value / max) * 100));
 }
 
-function describeSupply(id: SupplyId, amount: number, aliveCount: number) {
+function describeSupply(id: SupplyId, amount: number, aliveCount: number, day: number) {
   const info = SUPPLY_INFO[id];
   const low = isLow(id, amount);
-  const perUse = usageAmount(id, aliveCount);
+  // The horde grows nightly, so ammo shows what tonight's raid will take
+  const perUse = id === "ammo" ? hordeFor(day).ammo : usageAmount(id, aliveCount);
   const per = info.usage.per;
   const color: ColorStatus = low ? "red" : info.color;
 
@@ -181,7 +183,7 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
           <h2 className={HEADING}>Supplies</h2>
           <div className="flex flex-col gap-11 compact:grid compact:grid-cols-4 compact:gap-8 narrow:grid-cols-2">
             {SUPPLY_IDS.map((id) => {
-              const supply = describeSupply(id, supplies[id], alive.length);
+              const supply = describeSupply(id, supplies[id], alive.length, day);
               return (
                 <div
                   key={id}
