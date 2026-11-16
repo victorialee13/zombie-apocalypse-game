@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "../../components/Button";
+import TypedText from "../../components/TypedText";
 import type { ColorStatus } from "../../game/colors";
 import {
   OUTCOME_KIND,
@@ -15,7 +16,7 @@ import {
   type Outcome,
 } from "../../game/events";
 import { loadSettings } from "../../game/settings";
-import { SUPPLY_IDS, SUPPLY_INFO } from "../../game/supplies";
+import { SUPPLY_IDS, formatAmount } from "../../game/supplies";
 import { EVERYONE, STATUS_COLOR, firstNameByRole, type Survivor } from "../../game/survivors";
 import Modal, { BODY, BUTTON, NOTE_TEXT } from "./Modal";
 import { CHIP_TONE, FILL_TONE, TEXT_TONE } from "./tones";
@@ -34,7 +35,7 @@ function describeEffects(effects: Effects, survivors: Survivor[]): Effect[] {
     if (!change) continue;
     list.push({
       tone: change > 0 ? "green" : "red",
-      text: `${change > 0 ? "+" : "−"}${Math.abs(change)} ${SUPPLY_INFO[id].unit}`,
+      text: `${change > 0 ? "+" : "−"}${formatAmount(id, Math.abs(change))}`,
     });
   }
 
@@ -69,7 +70,9 @@ function Chips({ effects }: { effects: Effect[] }) {
 }
 
 // A bar split into the chance of each outcome, with the percentages underneath
-function Odds({ outcomes }: { outcomes: Outcome[] }) {
+function Odds({ outcomes: all }: { outcomes: Outcome[] }) {
+  // The lead's bonus can take an outcome's chance down to zero; leave those out
+  const outcomes = all.filter((o) => o.chance > 0);
   if (outcomes.length === 1) {
     return <span className={`${NOTE_TEXT} text-[length:calc(12*var(--t))]`}>Certain outcome</span>;
   }
@@ -125,7 +128,7 @@ export default function EventModal({
         >
           {kind.label.toUpperCase()}
         </span>
-        <p className={BODY}>{result.outcome.text}</p>
+        <TypedText className={BODY} text={result.outcome.text} />
         <Chips effects={describeEffects(totalEffects(result.choice, result.outcome), survivors)} />
         <div className="flex justify-end border-t border-line pt-18">
           <Button variant="primary" className={BUTTON} autoFocus onClick={onContinue}>
@@ -138,7 +141,7 @@ export default function EventModal({
 
   return (
     <Modal minimizable width={1000} label={`${dayLabel} · EVENT`} title={event.title}>
-      <p className={`${BODY} max-w-[60em]`}>{event.story}</p>
+      <TypedText className={`${BODY} max-w-[60em]`} text={event.story} />
 
       <div className="grid auto-cols-fr grid-flow-col gap-12 narrow:grid-flow-row">
         {event.choices.map((choice, i) => {

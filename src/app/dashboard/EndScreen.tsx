@@ -43,7 +43,7 @@ export default function EndScreen({ won, day, survivors, results, onPlayAgain }:
     >
       <p className={BODY}>
         {won
-          ? `The ${TOTAL_DAYS}th night is over. ${alive.length} of ${survivors.length} survivors walk out into the morning. ${verdict(alive.length, survivors.length)}`
+          ? `The ${TOTAL_DAYS}th night is over. ${alive.length} of ${survivors.length} ${alive.length === 1 ? "survivor walks" : "survivors walk"} out into the morning. ${verdict(alive.length, survivors.length)}`
           : `Everyone was lost on day ${day}. The radio keeps calling into an empty room.`}
       </p>
 

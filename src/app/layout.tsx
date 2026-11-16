@@ -12,7 +12,7 @@ const shareTechMono = Share_Tech_Mono({ weight: "400", subsets: ["latin"], varia
 const varelaRound = Varela_Round({ weight: "400", subsets: ["latin"], variable: "--font-varela-round" });
 
 export const metadata: Metadata = {
-  title: "Zombie Apocalypse Game",
+  title: "Station 4",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

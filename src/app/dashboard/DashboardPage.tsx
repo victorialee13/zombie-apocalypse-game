@@ -8,6 +8,7 @@ import { TOTAL_DAYS } from "../../game/rules";
 import {
   SUPPLY_IDS,
   SUPPLY_INFO,
+  formatAmount,
   isLow,
   usageAmount,
   type SupplyId,
@@ -51,7 +52,7 @@ function describeSupply(id: SupplyId, amount: number, aliveCount: number) {
 
   return {
     name: info.name,
-    amountText: `${amount} ${info.unit}`,
+    amountText: formatAmount(id, amount),
     color,
     fill: percent(amount, info.capacity),
     note,

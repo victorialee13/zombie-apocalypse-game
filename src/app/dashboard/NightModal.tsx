@@ -1,6 +1,6 @@
 import Button from "../../components/Button";
 import type { ReportLine } from "../../game/night";
-import { SUPPLY_IDS, SUPPLY_INFO, type Supplies } from "../../game/supplies";
+import { SUPPLY_IDS, SUPPLY_INFO, formatAmount, type Supplies } from "../../game/supplies";
 import Modal, { BUTTON, NOTE_TEXT } from "./Modal";
 import { FILL_TONE } from "./tones";
 
@@ -23,7 +23,7 @@ export default function NightModal({ day, before, after, report, continueLabel, 
             <div key={id} className="flex flex-col gap-4 rounded border border-line bg-panel-2 px-12 py-10">
               <span className={NOTE_TEXT}>{SUPPLY_INFO[id].name}</span>
               <span className="text-[length:calc(18*var(--t))]">
-                {after[id]} {SUPPLY_INFO[id].unit}
+                {formatAmount(id, after[id])}
               </span>
               <span
                 className={`font-label text-[length:calc(12*var(--t))] ${

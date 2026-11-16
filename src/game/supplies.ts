@@ -8,16 +8,17 @@ type Usage = { per: "day"; perSurvivor: number } | { per: "raid" | "patient"; am
 type SupplyInfo = {
   name: string;
   unit: string;
+  unitOne: string; // the unit when there is exactly one
   capacity: number;
   color: ColorStatus;
   usage: Usage;
 };
 
 export const SUPPLY_INFO: Record<SupplyId, SupplyInfo> = {
-  food: { name: "Food", unit: "rations", capacity: 50, color: "amber", usage: { per: "day", perSurvivor: 1 } },
-  water: { name: "Water", unit: "L", capacity: 50, color: "blue", usage: { per: "day", perSurvivor: 1 } },
-  medicine: { name: "Medicine", unit: "kits", capacity: 20, color: "purple", usage: { per: "patient", amount: 1 } },
-  ammo: { name: "Weapons & Ammo", unit: "rounds", capacity: 76, color: "green", usage: { per: "raid", amount: 6 } },
+  food: { name: "Food", unit: "rations", unitOne: "ration", capacity: 50, color: "amber", usage: { per: "day", perSurvivor: 1 } },
+  water: { name: "Water", unit: "L", unitOne: "L", capacity: 50, color: "blue", usage: { per: "day", perSurvivor: 1 } },
+  medicine: { name: "Medicine", unit: "kits", unitOne: "kit", capacity: 20, color: "purple", usage: { per: "patient", amount: 1 } },
+  ammo: { name: "Weapons & Ammo", unit: "rounds", unitOne: "round", capacity: 76, color: "green", usage: { per: "raid", amount: 6 } },
 };
 
 export const LOW_SUPPLY_FRACTION = 0.2;
@@ -39,6 +40,12 @@ export function applySupplyChange(current: Supplies, change: Partial<Supplies>):
     next[id] = Math.max(0, Math.min(SUPPLY_INFO[id].capacity, amount));
   }
   return next;
+}
+
+// "1 kit", "2 kits"
+export function formatAmount(id: SupplyId, amount: number) {
+  const info = SUPPLY_INFO[id];
+  return `${amount} ${amount === 1 ? info.unitOne : info.unit}`;
 }
 
 export function isLow(id: SupplyId, amount: number) {

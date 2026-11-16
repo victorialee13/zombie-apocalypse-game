@@ -9,6 +9,7 @@ import { applyMusicVolume } from "../../game/music";
 import {
   DEFAULT_SETTINGS,
   applyBrightness,
+  applyTextSize,
   loadSettings,
   saveSettings,
   type Settings,
@@ -54,6 +55,7 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
 
   function apply() {
     saveSettings(settings);
+    applyTextSize(settings.textSize);
   }
 
   function reset() {

@@ -7,7 +7,8 @@ import { useState, type ReactNode } from "react";
  * compact since --u there is measured against a smaller design. Spacing classes inside count in --t.
  */
 export const OVERLAY_SCALE =
-  "[--spacing:var(--t)] [--t:var(--u)] compact:[--t:calc(var(--u)*0.75)] narrow:[--t:calc(var(--u)*0.85)]";
+  // --text-scale is the Text size setting, so Large grows the whole card along with its text
+  "[--spacing:var(--t)] [--t:calc(var(--u)*var(--text-scale,1))] compact:[--t:calc(var(--u)*0.75*var(--text-scale,1))] narrow:[--t:calc(var(--u)*0.85*var(--text-scale,1))]";
 
 export const CARD = "rounded-lg border border-blood/70 bg-panel shadow-[0_20px_60px_rgb(0_0_0/0.6)]";
 

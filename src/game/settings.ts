@@ -38,6 +38,20 @@ export function saveSettings(settings: Settings) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
 
+const TEXT_SCALE: Record<string, number> = { Small: 0.9, Medium: 1, Large: 1.15 };
+
+// Scales everything drawn over the dashboard: events, night reports, the tutorial and the pause menu
+export function applyTextSize(size: string) {
+  document.documentElement.style.setProperty("--text-scale", String(TEXT_SCALE[size] ?? 1));
+}
+
+// Milliseconds per letter when story text is typed out; 0 shows it all at once
+const TEXT_DELAY: Record<string, number> = { Slow: 40, Normal: 14, Instant: 0 };
+
+export function textDelay(speed: string) {
+  return TEXT_DELAY[speed] ?? TEXT_DELAY.Normal;
+}
+
 export function applyBrightness(value: number) {
   document.documentElement.style.setProperty("--brightness", String(0.5 + value / 110));
 }
