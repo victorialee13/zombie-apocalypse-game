@@ -106,6 +106,8 @@ type EventModalProps = {
   continueLabel: string;
   onChoose: (choice: Choice) => void;
   onContinue: () => void;
+  onClose: () => void;
+  hidden: boolean;
 };
 
 export default function EventModal({
@@ -116,6 +118,8 @@ export default function EventModal({
   continueLabel,
   onChoose,
   onContinue,
+  onClose,
+  hidden,
 }: EventModalProps) {
   const [confirmFirst] = useState(() => loadSettings().confirmDecisions === "On");
   const [selected, setSelected] = useState<number | null>(null);
@@ -139,12 +143,12 @@ export default function EventModal({
     keys[String(i + 1)] = () => pick(i);
     keys[LETTERS[i].toLowerCase()] = () => pick(i);
   });
-  useShortcuts(keys, !result);
+  useShortcuts(keys, !result && !hidden);
 
   if (result) {
     const kind = OUTCOME_KIND[result.outcome.kind];
     return (
-      <Modal minimizable width={640} label={`${dayLabel} · OUTCOME`} title={result.choice.title}>
+      <Modal onClose={onClose} hidden={hidden} width={640} label={`${dayLabel} · OUTCOME`} title={result.choice.title}>
         <span
           className={`self-start rounded-[3px] border px-[0.8em] py-[0.3em] font-label text-[length:calc(13*var(--t))] tracking-[0.14em] ${CHIP_TONE[kind.tone]}`}
         >
@@ -162,7 +166,7 @@ export default function EventModal({
   }
 
   return (
-    <Modal minimizable width={1000} label={`${dayLabel} · EVENT`} title={event.title}>
+    <Modal onClose={onClose} hidden={hidden} width={1000} label={`${dayLabel} · EVENT`} title={event.title}>
       <TypedText className={`${BODY} max-w-[60em]`} text={event.story} />
 
       <div className="grid auto-cols-fr grid-flow-col gap-12 narrow:grid-flow-row">

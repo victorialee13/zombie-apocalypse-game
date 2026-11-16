@@ -27,10 +27,12 @@ type RationModalProps = {
   supplies: Supplies;
   survivors: Survivor[];
   onConfirm: (plan: RationPlan) => void;
+  onClose: () => void;
+  hidden: boolean;
 };
 
 // Shown before the night when stores can't cover everyone: the player picks who goes without
-export default function RationModal({ day, supplies, survivors, onConfirm }: RationModalProps) {
+export default function RationModal({ day, supplies, survivors, onConfirm, onClose, hidden }: RationModalProps) {
   const needs = rationNeeds(supplies, survivors);
   const short = RATIONED.filter((id) => isShort(needs[id]));
   // Starts from the old roster-order split so there's always a valid plan to confirm
@@ -47,7 +49,7 @@ export default function RationModal({ day, supplies, survivors, onConfirm }: Rat
   }
 
   return (
-    <Modal minimizable width={1000} label={`DAY ${String(day).padStart(2, "0")} · RATIONS`} title="Not enough to go around">
+    <Modal onClose={onClose} hidden={hidden} width={1000} label={`DAY ${String(day).padStart(2, "0")} · RATIONS`} title="Not enough to go around">
       <p className={BODY}>Night is coming and the stores won’t cover everyone. You decide who goes without.</p>
 
       {short.map((id) => {

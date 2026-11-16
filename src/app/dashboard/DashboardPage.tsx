@@ -116,10 +116,18 @@ type DashboardPageProps = {
   supplies: Supplies;
   survivors: Survivor[];
   onBeginDay?: () => void;
+  beginLabel?: string; // becomes "Continue Day" while the day's card is closed
   children?: ReactNode; // overlays like the day's event, rendered inside so they share the screen's scale
 };
 
-export default function DashboardPage({ day, supplies, survivors, onBeginDay, children }: DashboardPageProps) {
+export default function DashboardPage({
+  day,
+  supplies,
+  survivors,
+  onBeginDay,
+  beginLabel = "Begin Day",
+  children,
+}: DashboardPageProps) {
   useDisableZoom();
   const [paused, setPaused] = useState(false);
   // Bumped by the pause menu's How to Play to replay the tutorial without leaving the run
@@ -279,10 +287,10 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
           className="block min-h-0 min-w-[10em] px-[1.1em] py-[0.64em] text-[length:calc(23*var(--u))] compact:text-[length:calc(18*var(--u))] narrow:w-full"
           onClick={onBeginDay}
           data-tour="begin-day"
-          title="Begin Day (Enter)"
+          title={`${beginLabel} (Enter)`}
           aria-keyshortcuts="Enter"
         >
-          Begin Day&nbsp;&nbsp;→
+          {beginLabel}&nbsp;&nbsp;→
         </Button>
       </footer>
 

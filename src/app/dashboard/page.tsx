@@ -41,8 +41,11 @@ export default function Dashboard() {
   const [phase, setPhase] = useState<Phase>({ kind: "dashboard" });
   const [seenEvents, setSeenEvents] = useState<string[]>([]);
   const [results, setResults] = useState<OutcomeKind[]>([]);
+  // The event and ration cards can be closed to check the dashboard; its main button reopens them
+  const [cardClosed, setCardClosed] = useState(false);
 
   function beginDay() {
+    if (cardClosed) return setCardClosed(false);
     if (phase.kind !== "dashboard") return;
     const event = eventForDay(day, survivors, seenEvents);
     // Days without an event go straight to the night
@@ -90,15 +93,24 @@ export default function Dashboard() {
     setPhase({ kind: "dashboard" });
   }
 
-  // Enter begins the day from the dashboard; each overlay handles its own keys
-  useShortcuts({ enter: beginDay }, phase.kind === "dashboard");
+  // Enter begins the day (or reopens a closed card) from the dashboard; each overlay handles its own keys
+  useShortcuts({ enter: beginDay }, phase.kind === "dashboard" || cardClosed);
 
   const gameOver = !anyoneAlive(survivors) || day >= TOTAL_DAYS;
+  const closeCard = () => setCardClosed(true);
 
   return (
-    <DashboardPage day={day} supplies={supplies} survivors={survivors} onBeginDay={beginDay}>
+    <DashboardPage
+      day={day}
+      supplies={supplies}
+      survivors={survivors}
+      onBeginDay={beginDay}
+      beginLabel={cardClosed ? "Continue Day" : "Begin Day"}
+    >
       {phase.kind === "event" && (
         <EventModal
+          hidden={cardClosed}
+          onClose={closeCard}
           day={day}
           event={phase.event}
           survivors={survivors}
@@ -109,7 +121,14 @@ export default function Dashboard() {
         />
       )}
       {phase.kind === "ration" && (
-        <RationModal day={day} supplies={supplies} survivors={survivors} onConfirm={resolve} />
+        <RationModal
+          day={day}
+          supplies={supplies}
+          survivors={survivors}
+          onConfirm={resolve}
+          onClose={closeCard}
+          hidden={cardClosed}
+        />
       )}
       {phase.kind === "night" && (
         <NightModal
