@@ -279,6 +279,8 @@ export default function DashboardPage({ day, supplies, survivors, onBeginDay, ch
           className="block min-h-0 min-w-[10em] px-[1.1em] py-[0.64em] text-[length:calc(23*var(--u))] compact:text-[length:calc(18*var(--u))] narrow:w-full"
           onClick={onBeginDay}
           data-tour="begin-day"
+          title="Begin Day (Enter)"
+          aria-keyshortcuts="Enter"
         >
           Begin Day&nbsp;&nbsp;→
         </Button>

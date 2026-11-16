@@ -6,6 +6,7 @@ import type { ColorStatus } from "../../game/colors";
 import { STATUS_COLOR, firstNameByRole, type Status, type Survivor } from "../../game/survivors";
 import { BODY, BUTTON, CARD, LABEL, NOTE_TEXT, NOTE_TITLE, OVERLAY_SCALE } from "./Modal";
 import { CHIP_TONE, FILL_TONE } from "./tones";
+import { BLOCKS_SHORTCUTS } from "./useShortcuts";
 
 const SEEN_KEY = "zombie-tutorial-seen";
 
@@ -338,6 +339,7 @@ useLayoutEffect(() => {
   const popover = (
     <div
       ref={popoverRef}
+      {...BLOCKS_SHORTCUTS}
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"

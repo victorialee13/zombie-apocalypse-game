@@ -21,6 +21,7 @@ import EndScreen from "./EndScreen";
 import EventModal, { type EventResult } from "./EventModal";
 import NightModal from "./NightModal";
 import RationModal from "./RationModal";
+import { useShortcuts } from "./useShortcuts";
 
 // Each day goes dashboard → event (pick a choice, luck decides how it goes) → rations if stores run short
 // → night report → the next day, until everyone is dead or the last night is over
@@ -88,6 +89,9 @@ export default function Dashboard() {
     setResults([]);
     setPhase({ kind: "dashboard" });
   }
+
+  // Enter begins the day from the dashboard; each overlay handles its own keys
+  useShortcuts({ enter: beginDay }, phase.kind === "dashboard");
 
   const gameOver = !anyoneAlive(survivors) || day >= TOTAL_DAYS;
 

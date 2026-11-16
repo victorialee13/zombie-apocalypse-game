@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes } from "react";
+import type { ComponentPropsWithRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const BASE =
@@ -10,7 +10,7 @@ const VARIANTS = {
   secondary: "border border-line bg-panel",
 };
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ComponentPropsWithRef<"button"> & {
   variant?: keyof typeof VARIANTS;
   href?: string;
 };

@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { applyMusicVolume } from "../../game/music";
 import { applyBrightness, loadSettings, saveSettings, type Settings } from "../../game/settings";
 import { BODY, BUTTON, CARD, LABEL, OVERLAY_SCALE } from "./Modal";
+import { BLOCKS_SHORTCUTS } from "./useShortcuts";
 
 const TITLE = "text-center font-display text-[length:calc(44*var(--t))] leading-[1.05]";
 
@@ -69,6 +70,7 @@ export default function PauseMenu({ onResume, onHowToPlay }: PauseMenuProps) {
 
   return (
     <div
+      {...BLOCKS_SHORTCUTS}
       className={`fixed inset-0 z-60 flex items-center justify-center bg-black/65 p-12 ${OVERLAY_SCALE}`}
       onClick={(e) => e.target === e.currentTarget && onResume()}
     >

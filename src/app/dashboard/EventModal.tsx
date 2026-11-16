@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../components/Button";
 import TypedText from "../../components/TypedText";
 import type { ColorStatus } from "../../game/colors";
@@ -20,9 +20,11 @@ import { SUPPLY_IDS, formatAmount } from "../../game/supplies";
 import { EVERYONE, STATUS_COLOR, firstNameByRole, type Survivor } from "../../game/survivors";
 import Modal, { BODY, BUTTON, NOTE_TEXT } from "./Modal";
 import { CHIP_TONE, FILL_TONE, TEXT_TONE } from "./tones";
+import { useShortcuts } from "./useShortcuts";
 
 const LETTERS = ["A", "B", "C", "D"];
 const SMALL_LABEL = "font-label text-[length:calc(11*var(--t))] tracking-[0.1em] text-muted";
+const KBD = "rounded-[3px] border border-line px-5 py-1 font-label text-[length:calc(11*var(--t))]";
 
 type Effect = { tone: ColorStatus; text: string };
 
@@ -117,7 +119,27 @@ export default function EventModal({
 }: EventModalProps) {
   const [confirmFirst] = useState(() => loadSettings().confirmDecisions === "On");
   const [selected, setSelected] = useState<number | null>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
   const dayLabel = `DAY ${String(day).padStart(2, "0")}`;
+
+  function pick(i: number) {
+    if (!isAvailable(event.choices[i], survivors)) return;
+    if (!confirmFirst) return onChoose(event.choices[i]);
+    setSelected(i);
+  }
+
+  // Picking a choice moves focus to Confirm (once it's enabled), so Enter or Space commits to it
+  useEffect(() => {
+    if (selected !== null) confirmRef.current?.focus();
+  }, [selected]);
+
+  // 1–4 or A–D pick a choice, matching the letters on the cards
+  const keys: Record<string, () => void> = {};
+  event.choices.forEach((_, i) => {
+    keys[String(i + 1)] = () => pick(i);
+    keys[LETTERS[i].toLowerCase()] = () => pick(i);
+  });
+  useShortcuts(keys, !result);
 
   if (result) {
     const kind = OUTCOME_KIND[result.outcome.kind];
@@ -161,7 +183,8 @@ export default function EventModal({
                     ? "cursor-pointer border-blood bg-blood/10"
                     : "cursor-pointer border-line hover:border-muted"
               }`}
-              onClick={() => (confirmFirst ? setSelected(i) : onChoose(choice))}
+              aria-keyshortcuts={`${i + 1} ${LETTERS[i]}`}
+              onClick={() => pick(i)}
             >
               <div className="flex items-center gap-10">
                 <span
@@ -203,9 +226,21 @@ export default function EventModal({
       </div>
 
       <div className="flex items-center justify-between gap-16 border-t border-line pt-18">
-        <span className="text-[length:calc(14*var(--t))] text-amber">Choices can’t be undone. Luck decides the rest.</span>
+        <div className="flex flex-col gap-4">
+          <span className="text-[length:calc(14*var(--t))] text-amber">Choices can’t be undone. Luck decides the rest.</span>
+          {/* Touch screens have no keyboard, so the hint only shows with a mouse */}
+          <span className="flex items-center gap-6 text-[length:calc(13*var(--t))] text-muted pointer-coarse:hidden">
+            Press <kbd className={KBD}>1</kbd>–<kbd className={KBD}>{event.choices.length}</kbd> to pick
+            {confirmFirst && (
+              <>
+                , <kbd className={KBD}>Enter</kbd> to confirm
+              </>
+            )}
+          </span>
+        </div>
         {confirmFirst && (
           <Button
+            ref={confirmRef}
             variant="primary"
             className={`${BUTTON} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100`}
             disabled={selected === null}
